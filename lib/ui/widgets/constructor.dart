@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:stack_board/stack_board.dart';
 
@@ -12,6 +15,23 @@ class ConstructorScreen extends StatefulWidget {
 
 class ConstructorScreenState extends State<ConstructorScreen> {
   late StackBoardController _boardController;
+
+  void _pickupFile(BuildContext context) async {
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.image,
+    );
+    if (result != null) {
+      final file = File(result.files.single.path!);
+      _boardController.add(
+        MaskedImage(
+          FileImage(file),
+        ),
+      );
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.pop(context);
+      });
+    }
+  }
 
   @override
   void initState() {
@@ -37,34 +57,32 @@ class ConstructorScreenState extends State<ConstructorScreen> {
         appBar: AppBar(
           title: const Text('Stack Board Demo'),
         ),
-        body: Center(
-          child: SizedBox(
-            width: 671,
-            height: 675,
-            child: Stack(
-              children: <Widget>[
-                const Image(
-                  image: Images.tshirtFront,
-                  width: 671,
-                  height: 675,
-                  fit: BoxFit.cover,
-                ),
-                Positioned(
-                  top: (675 / 2) - (210 / 2) - 105,
-                  left: (671 / 2) - (297 / 2),
-                  width: 297,
-                  height: 210,
-                  child: StackBoard(
-                    controller: _boardController,
-                    caseStyle: const CaseStyle(
-                      borderColor: Colors.grey,
-                      iconColor: Colors.white,
-                    ),
+        body: Stack(
+          alignment: Alignment.center,
+          children: [
+            const Positioned(
+              top: 265 / 8,
+              width: 671 * 2,
+              height: 675 * 2,
+              child: Image(
+                image: Images.tshirtFront,
+                fit: BoxFit.cover,
+              ),
+            ),
+            Positioned(
+              width: 297 * 2,
+              height: 210 * 2,
+              child: ClipRect(
+                child: StackBoard(
+                  controller: _boardController,
+                  caseStyle: const CaseStyle(
+                    borderColor: Colors.grey,
+                    iconColor: Colors.white,
                   ),
                 ),
-              ],
+              ),
             ),
-          ),
+          ],
         ),
         floatingActionButton: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -88,11 +106,17 @@ class ConstructorScreenState extends State<ConstructorScreen> {
                     _spacer,
                     FloatingActionButton(
                       onPressed: () {
-                        _boardController.add(
-                          const MaskedImage(
-                            NetworkImage(
-                                'https://uprostim.com/wp-content/uploads/2021/05/image034-5.jpg'),
-                          ),
+                        showModalBottomSheet(
+                          context: context,
+                          builder: (context) {
+                            return Center(
+                              child: ElevatedButton.icon(
+                                onPressed: () => _pickupFile(context),
+                                icon: const Icon(Icons.file_open_rounded),
+                                label: const Text('File'),
+                              ),
+                            );
+                          },
                         );
                       },
                       child: const Icon(Icons.image_rounded),
