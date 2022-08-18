@@ -3,8 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:stack_board/stack_board.dart';
 
-import 'mask.dart';
-import 'resources/images.dart';
+import '../../resources/images.dart';
 
 ///自定义类型 Custom item type
 class CustomItem extends StackBoardItem {
@@ -165,8 +164,9 @@ class _StackBoardScreenState extends State<StackBoardScreen> {
                     FloatingActionButton(
                       onPressed: () {
                         _boardController.add(
-                          const StackBoardItem(
-                            child: MaskedImageItem(),
+                          const MaskedImage(
+                            NetworkImage(
+                                'https://uprostim.com/wp-content/uploads/2021/05/image034-5.jpg'),
                           ),
                         );
                       },

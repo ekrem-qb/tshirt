@@ -29,10 +29,8 @@ environment:
 dependencies:
   camera: ^0.10.0
   camera_windows: ^0.1.0+4
-  file_picker: ^4.6.1
   flutter:
     sdk: flutter
-  flutter_libserialport: ^0.2.3
   screenshot: ^1.2.3
   stack_board:
     git: https://github.com/ekrem-qb/stack_board.git
