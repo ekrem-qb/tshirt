@@ -36,14 +36,14 @@ class CustomItem extends StackBoardItem {
       );
 }
 
-class StackBoardScreen extends StatefulWidget {
-  const StackBoardScreen({Key? key}) : super(key: key);
+class ConstructorScreen extends StatefulWidget {
+  const ConstructorScreen({Key? key}) : super(key: key);
 
   @override
-  _StackBoardScreenState createState() => _StackBoardScreenState();
+  _ConstructorScreenState createState() => _ConstructorScreenState();
 }
 
-class _StackBoardScreenState extends State<StackBoardScreen> {
+class _ConstructorScreenState extends State<ConstructorScreen> {
   late StackBoardController _boardController;
 
   @override
