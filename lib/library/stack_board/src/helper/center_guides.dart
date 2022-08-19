@@ -30,11 +30,11 @@ class _CenterGuidesState extends State<CenterGuides>
   Widget build(BuildContext context) {
     return Positioned.fill(
       child: CustomPaint(
-        child: widget.child,
         foregroundPainter: _CenterGuidesPainter(
           drawVerticalGuides: _isVerticalGuidesEnabled,
           drawHorizontalGuides: _isHorizontalGuidesEnabled,
         ),
+        child: widget.child,
       ),
     );
   }
@@ -62,10 +62,12 @@ class _CenterGuidesPainter extends CustomPainter {
 
       center = size.center(Offset.zero);
 
-      if (drawVerticalGuides)
+      if (drawVerticalGuides) {
         _drawDashedLine(canvas, size, paint, vertical: true);
-      if (drawHorizontalGuides)
+      }
+      if (drawHorizontalGuides) {
         _drawDashedLine(canvas, size, paint, vertical: false);
+      }
     }
   }
 
@@ -105,10 +107,12 @@ class CenterGuidesController {
   _CenterGuidesState? _centerGuidesState;
 
   void toggleGuides({bool? newVerticalState, bool? newHorizontalState}) {
-    if (newVerticalState != null)
+    if (newVerticalState != null) {
       _centerGuidesState?._isVerticalGuidesEnabled = newVerticalState;
-    if (newHorizontalState != null)
+    }
+    if (newHorizontalState != null) {
       _centerGuidesState?._isHorizontalGuidesEnabled = newHorizontalState;
+    }
 
     _centerGuidesState?.safeSetState(() {});
   }

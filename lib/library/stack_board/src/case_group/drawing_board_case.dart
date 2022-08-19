@@ -17,7 +17,7 @@ class DrawingBoardCase extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _DrawingBoardCaseState createState() => _DrawingBoardCaseState();
+  DrawingBoardCaseState createState() => DrawingBoardCaseState();
 
   /// 画板配置对象
   final StackDrawing stackDrawing;
@@ -32,7 +32,7 @@ class DrawingBoardCase extends StatefulWidget {
   final OperationState? operationState;
 }
 
-class _DrawingBoardCaseState extends State<DrawingBoardCase>
+class DrawingBoardCaseState extends State<DrawingBoardCase>
     with SafeState<DrawingBoardCase> {
   /// 绘制控制器
   late DrawingController _drawingController;
@@ -97,6 +97,19 @@ class _DrawingBoardCaseState extends State<DrawingBoardCase>
       tapToEdit: widget.stackDrawing.tapToEdit,
       tools: _tools,
       operationState: _operationState,
+      onDelete: widget.onDelete,
+      caseStyle: widget.stackDrawing.caseStyle,
+      onOperationStateChanged: (OperationState os) {
+        if (os == OperationState.editing && !_isEditing) {
+          _isEditing = true;
+          safeSetState(() {});
+        } else if (os != OperationState.editing && _isEditing) {
+          _isEditing = false;
+          safeSetState(() {});
+        }
+
+        return;
+      },
       child: FittedBox(
         child: SizedBox.fromSize(
           size: widget.stackDrawing.size,
@@ -121,19 +134,6 @@ class _DrawingBoardCaseState extends State<DrawingBoardCase>
           ),
         ),
       ),
-      onDelete: widget.onDelete,
-      caseStyle: widget.stackDrawing.caseStyle,
-      onOperationStateChanged: (OperationState os) {
-        if (os == OperationState.editing && !_isEditing) {
-          _isEditing = true;
-          safeSetState(() {});
-        } else if (os != OperationState.editing && _isEditing) {
-          _isEditing = false;
-          safeSetState(() {});
-        }
-
-        return;
-      },
     );
   }
 

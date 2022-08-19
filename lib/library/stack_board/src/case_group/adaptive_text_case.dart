@@ -19,7 +19,7 @@ class AdaptiveTextCase extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _AdaptiveTextCaseState createState() => _AdaptiveTextCaseState();
+  AdaptiveTextCaseState createState() => AdaptiveTextCaseState();
 
   /// 自适应文本对象
   final AdaptiveText adaptiveText;
@@ -34,7 +34,7 @@ class AdaptiveTextCase extends StatefulWidget {
   final OperationState? operationState;
 }
 
-class _AdaptiveTextCaseState extends State<AdaptiveTextCase>
+class AdaptiveTextCaseState extends State<AdaptiveTextCase>
     with SafeState<AdaptiveTextCase> {
   /// 是否正在编辑
   bool _isEditing = false;
@@ -90,7 +90,6 @@ class _AdaptiveTextCaseState extends State<AdaptiveTextCase>
       isEditable: true,
       onPointerDown: widget.onPointerDown,
       tapToEdit: widget.adaptiveText.tapToEdit,
-      child: _buildEditingBox,
       onDelete: widget.onDelete,
       operationState: widget.operationState,
       caseStyle: widget.adaptiveText.caseStyle,
@@ -107,6 +106,7 @@ class _AdaptiveTextCaseState extends State<AdaptiveTextCase>
 
         return;
       },
+      child: _buildEditingBox,
     );
   }
 

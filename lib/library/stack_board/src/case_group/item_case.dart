@@ -8,8 +8,8 @@ import '../helper/case_style.dart';
 import '../helper/operat_state.dart';
 
 /// 配置项
-class _Config {
-  _Config({
+class Config {
+  Config({
     this.size,
     this.offset = Offset.zero,
     this.angle = 0,
@@ -28,13 +28,13 @@ class _Config {
   Matrix4? flipMatrix;
 
   /// 拷贝
-  _Config copy({
+  Config copy({
     Size? size,
     Offset? offset,
     double? angle,
     Matrix4? flipMatrix,
   }) =>
-      _Config(
+      Config(
         size: size ?? this.size,
         offset: offset ?? this.offset,
         angle: angle ?? this.angle,
@@ -65,7 +65,7 @@ class ItemCase extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _ItemCaseState createState() => _ItemCaseState();
+  ItemCaseState createState() => ItemCaseState();
 
   final ItemCaseController? controller;
 
@@ -114,9 +114,9 @@ class ItemCase extends StatefulWidget {
   final bool? Function(OperationState)? onOperationStateChanged;
 }
 
-class _ItemCaseState extends State<ItemCase> with SafeState<ItemCase> {
+class ItemCaseState extends State<ItemCase> with SafeState<ItemCase> {
   /// 基础参数状态
-  late SafeValueNotifier<_Config> _config;
+  late SafeValueNotifier<Config> _config;
 
   /// 操作状态
   late OperationState _operationState;
@@ -141,7 +141,7 @@ class _ItemCaseState extends State<ItemCase> with SafeState<ItemCase> {
   void initState() {
     super.initState();
     _operationState = widget.operationState ?? OperationState.idle;
-    _config = SafeValueNotifier<_Config>(_Config());
+    _config = SafeValueNotifier<Config>(Config());
     minWidthAndHeight = _caseStyle.iconSize * 3;
 
     _config.value.offset = const Offset(double.maxFinite, double.maxFinite);
@@ -413,14 +413,14 @@ class _ItemCaseState extends State<ItemCase> with SafeState<ItemCase> {
 
   @override
   Widget build(BuildContext context) {
-    return ExValueBuilder<_Config>(
-      shouldRebuild: (_Config? previousConfig, _Config? newConfig) =>
+    return ExValueBuilder<Config>(
+      shouldRebuild: (Config? previousConfig, Config? newConfig) =>
           previousConfig?.size != newConfig?.size ||
           previousConfig?.offset != newConfig?.offset ||
           previousConfig?.angle != newConfig?.angle ||
           previousConfig?.flipMatrix != newConfig?.flipMatrix,
       valueListenable: _config,
-      builder: (_, _Config? config, Widget? child) {
+      builder: (_, Config? config, Widget? child) {
         return Positioned(
           top: config?.offset.dy,
           left: config?.offset.dx,
@@ -636,16 +636,16 @@ class _ItemCaseState extends State<ItemCase> with SafeState<ItemCase> {
       width: _caseStyle.iconSize,
       height: _caseStyle.iconSize,
       child: DecoratedBox(
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: _caseStyle.borderColor,
+        ),
         child: IconTheme(
           data: Theme.of(context).iconTheme.copyWith(
                 color: _caseStyle.iconColor,
                 size: _caseStyle.iconSize * 0.5,
               ),
           child: child,
-        ),
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: _caseStyle.borderColor,
         ),
       ),
     );
@@ -661,7 +661,7 @@ class _ItemCaseState extends State<ItemCase> with SafeState<ItemCase> {
 }
 
 class ItemCaseController {
-  _ItemCaseState? _itemCaseState;
+  ItemCaseState? _itemCaseState;
 
   void resizeCase(Offset scaleOffset) {
     _itemCaseState?._scaleHandle(
@@ -675,5 +675,5 @@ class ItemCaseController {
     _itemCaseState = null;
   }
 
-  SafeValueNotifier<_Config>? get config => _itemCaseState?._config;
+  SafeValueNotifier<Config>? get config => _itemCaseState?._config;
 }

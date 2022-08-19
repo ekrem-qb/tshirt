@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tshirt/ui/widgets/constructor.dart';
+import 'ui/widgets/constructor.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();

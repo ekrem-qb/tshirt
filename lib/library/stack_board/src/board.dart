@@ -28,7 +28,7 @@ class StackBoard extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _StackBoardState createState() => _StackBoardState();
+  StackBoardState createState() => StackBoardState();
 
   /// 层叠版控制器
   final StackBoardController? controller;
@@ -48,7 +48,7 @@ class StackBoard extends StatefulWidget {
   final bool tapItemToMoveToTop;
 }
 
-class _StackBoardState extends State<StackBoard> with SafeState<StackBoard> {
+class StackBoardState extends State<StackBoard> with SafeState<StackBoard> {
   /// 子控件列表
   late List<StackBoardItem> _children;
 
@@ -157,6 +157,11 @@ class _StackBoardState extends State<StackBoard> with SafeState<StackBoard> {
   Widget _buildItem(StackBoardItem item) {
     Widget child = ItemCase(
       key: _getKey(item.id),
+      onDelete: () => _onDelete(item),
+      onPointerDown: () => _moveItemToTop(item.id),
+      caseStyle: item.caseStyle,
+      operationState:
+          _focusedItemId == item.id ? OperationState.idle : _operationState,
       child: Container(
         width: 150,
         height: 150,
@@ -164,11 +169,6 @@ class _StackBoardState extends State<StackBoard> with SafeState<StackBoard> {
         child: const Text(
             'Unknown item type, please use customBuilder to build it'),
       ),
-      onDelete: () => _onDelete(item),
-      onPointerDown: () => _moveItemToTop(item.id),
-      caseStyle: item.caseStyle,
-      operationState:
-          _focusedItemId == item.id ? OperationState.idle : _operationState,
     );
 
     if (item is AdaptiveText) {
@@ -201,12 +201,12 @@ class _StackBoardState extends State<StackBoard> with SafeState<StackBoard> {
     } else {
       child = ItemCase(
         key: _getKey(item.id),
-        child: item.child,
         onDelete: () => _onDelete(item),
         onPointerDown: () => _moveItemToTop(item.id),
         caseStyle: item.caseStyle,
         operationState:
             _focusedItemId == item.id ? OperationState.idle : _operationState,
+        child: item.child,
       );
 
       if (widget.customBuilder != null) {
@@ -227,7 +227,7 @@ class _StackBoardState extends State<StackBoard> with SafeState<StackBoard> {
 
 /// 控制器
 class StackBoardController {
-  _StackBoardState? _stackBoardState;
+  StackBoardState? _stackBoardState;
 
   /// 检查是否加载
   void _done() {
