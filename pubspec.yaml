@@ -32,9 +32,10 @@ dependencies:
   file_picker: ^5.0.1
   flutter:
     sdk: flutter
+  flutter_drawing_board: ^0.2.7
+  flutter_svg: ^1.1.4
+  meta: ^1.7.0
   screenshot: ^1.2.3
-  stack_board:
-    git: https://github.com/ekrem-qb/stack_board.git
 
 
   # The following adds the Cupertino Icons font to your application.

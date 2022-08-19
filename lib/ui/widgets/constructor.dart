@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:stack_board/stack_board.dart';
 
+import '../../library/stack_board/stack_board.dart';
 import '../../resources/images.dart';
 
 class ConstructorScreen extends StatefulWidget {
@@ -16,19 +16,24 @@ class ConstructorScreen extends StatefulWidget {
 class ConstructorScreenState extends State<ConstructorScreen> {
   late StackBoardController _boardController;
 
+  Widget imageChooseWidget(context) {
+    return Center(
+      child: ElevatedButton.icon(
+        onPressed: () => _pickupFile(context),
+        icon: const Icon(Icons.file_open_rounded),
+        label: const Text('File'),
+      ),
+    );
+  }
+
   void _pickupFile(BuildContext context) async {
     final result = await FilePicker.platform.pickFiles(
       type: FileType.image,
     );
     if (result != null) {
       final file = File(result.files.single.path!);
-      _boardController.add(
-        MaskedImage(
-          FileImage(file),
-        ),
-      );
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        Navigator.pop(context);
+        Navigator.pop(context, FileImage(file));
       });
     }
   }
@@ -60,13 +65,15 @@ class ConstructorScreenState extends State<ConstructorScreen> {
         body: Stack(
           alignment: Alignment.center,
           children: [
-            const Positioned(
-              top: 265 / 8,
+            Positioned(
               width: 671 * 2,
               height: 675 * 2,
-              child: Image(
-                image: Images.tshirtFront,
-                fit: BoxFit.cover,
+              child: Transform.translate(
+                offset: const Offset(0, 105 * 2),
+                child: const Image(
+                  image: Images.tshirtFront,
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
             Positioned(
@@ -105,19 +112,19 @@ class ConstructorScreenState extends State<ConstructorScreen> {
                         child: const Icon(Icons.text_fields_rounded)),
                     _spacer,
                     FloatingActionButton(
-                      onPressed: () {
-                        showModalBottomSheet(
+                      onPressed: () async {
+                        final result =
+                            await showModalBottomSheet<ImageProvider>(
                           context: context,
-                          builder: (context) {
-                            return Center(
-                              child: ElevatedButton.icon(
-                                onPressed: () => _pickupFile(context),
-                                icon: const Icon(Icons.file_open_rounded),
-                                label: const Text('File'),
-                              ),
-                            );
-                          },
+                          builder: imageChooseWidget,
                         );
+                        if (result != null) {
+                          _boardController.add(
+                            MaskedImage(
+                              result,
+                            ),
+                          );
+                        }
                       },
                       child: const Icon(Icons.image_rounded),
                     ),
