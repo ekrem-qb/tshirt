@@ -29,7 +29,7 @@ Future<CameraController> _initializeControllerFuture() async {
 
 // A screen that allows users to take a picture using a given camera.
 class TakePictureScreen extends StatefulWidget {
-  const TakePictureScreen({Key? key}) : super(key: key);
+  const TakePictureScreen({super.key});
 
   @override
   TakePictureScreenState createState() => TakePictureScreenState();
@@ -123,7 +123,7 @@ class DisplayPictureScreen extends StatelessWidget {
   late final imageNoBgPath;
   late final result;
 
-  DisplayPictureScreen({Key? key, required this.imagePath}) : super(key: key) {
+  DisplayPictureScreen({super.key, required this.imagePath}) {
     imageNoBgPath = imagePath.replaceFirst('.jpeg', '_no_bg.png');
     result = Process.run(
         'py -m carvekit -i $imagePath -o $imageNoBgPath --device cpu --post none',

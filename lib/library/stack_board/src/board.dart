@@ -18,14 +18,14 @@ import 'item_group/stack_drawing.dart';
 /// 层叠板
 class StackBoard extends StatefulWidget {
   const StackBoard({
-    Key? key,
+    super.key,
     this.controller,
     this.background,
     this.caseStyle = const CaseStyle(),
     this.customBuilder,
     this.tapItemToMoveToTop = true,
     this.enableCenterGuides = true,
-  }) : super(key: key);
+  });
 
   @override
   StackBoardState createState() => StackBoardState();
@@ -192,9 +192,10 @@ class StackBoardState extends State<StackBoard> with SafeState<StackBoard> {
     } else if (item is MaskedImage) {
       child = MaskedImageCase(
         key: _getKey(item.id),
-        maskedImage: item,
+        image: item.image,
         onDelete: () => _onDelete(item),
         onPointerDown: () => _moveItemToTop(item.id),
+        caseStyle: item.caseStyle,
         operationState:
             _focusedItemId == item.id ? OperationState.idle : _operationState,
       );

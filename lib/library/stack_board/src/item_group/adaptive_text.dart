@@ -16,15 +16,12 @@ class AdaptiveText extends StackBoardItem {
     this.textScaleFactor,
     this.maxLines,
     this.semanticsLabel,
-    final int? id,
-    final Future<bool> Function()? onDelete,
-    CaseStyle? caseStyle,
+    super.id,
+    super.onDelete,
+    super.caseStyle,
     bool? tapToEdit,
   }) : super(
-          id: id,
-          onDelete: onDelete,
           child: const SizedBox.shrink(),
-          caseStyle: caseStyle,
           tapToEdit: tapToEdit ?? false,
         );
 

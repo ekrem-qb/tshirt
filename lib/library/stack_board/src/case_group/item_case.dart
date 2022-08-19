@@ -45,7 +45,7 @@ class Config {
 /// 操作外壳
 class ItemCase extends StatefulWidget {
   const ItemCase({
-    Key? key,
+    super.key,
     this.controller,
     required this.child,
     this.isCentered = false,
@@ -62,7 +62,7 @@ class ItemCase extends StatefulWidget {
     this.onAngleChanged,
     this.onPointerDown,
     this.onFlipped,
-  }) : super(key: key);
+  });
 
   @override
   ItemCaseState createState() => ItemCaseState();
@@ -116,7 +116,7 @@ class ItemCase extends StatefulWidget {
 
 class ItemCaseState extends State<ItemCase> with SafeState<ItemCase> {
   /// 基础参数状态
-  late SafeValueNotifier<Config> _config;
+  late SafeValueNotifier<Config> config;
 
   /// 操作状态
   late OperationState _operationState;
@@ -141,13 +141,13 @@ class ItemCaseState extends State<ItemCase> with SafeState<ItemCase> {
   void initState() {
     super.initState();
     _operationState = widget.operationState ?? OperationState.idle;
-    _config = SafeValueNotifier<Config>(Config());
+    config = SafeValueNotifier<Config>(Config());
     minWidthAndHeight = _caseStyle.iconSize * 3;
 
-    _config.value.offset = const Offset(double.maxFinite, double.maxFinite);
+    config.value.offset = const Offset(double.maxFinite, double.maxFinite);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _recalculateCenter();
-      _config.value.offset = center;
+      config.value.offset = center;
     });
   }
 
@@ -176,7 +176,7 @@ class ItemCaseState extends State<ItemCase> with SafeState<ItemCase> {
 
   @override
   void dispose() {
-    _config.dispose();
+    config.dispose();
     super.dispose();
   }
 
@@ -218,7 +218,7 @@ class ItemCaseState extends State<ItemCase> with SafeState<ItemCase> {
 
   void _movingStart(DragStartDetails dragStartDetails) {
     movingStartPosition = dragStartDetails.globalPosition;
-    movingStartOffset = _config.value.offset;
+    movingStartOffset = config.value.offset;
   }
 
   /// 移动操作
@@ -254,7 +254,7 @@ class ItemCaseState extends State<ItemCase> with SafeState<ItemCase> {
     //移动拦截
     if (!(widget.onOffsetChanged?.call(newOffset) ?? true)) return;
 
-    _config.value = _config.value.copy(offset: newOffset);
+    config.value = config.value.copy(offset: newOffset);
   }
 
   /// 缩放操作
@@ -277,7 +277,7 @@ class ItemCaseState extends State<ItemCase> with SafeState<ItemCase> {
       }
     }
 
-    if (_config.value.size == null) return;
+    if (config.value.size == null) return;
 
     currentUnfittedSize = Size(
       currentUnfittedSize.width + (scaleOffset.dx * 2),
@@ -305,38 +305,38 @@ class ItemCaseState extends State<ItemCase> with SafeState<ItemCase> {
         fittedSize.height > minWidthAndHeight &&
         fittedSize.width < maxWidthAndHeight &&
         fittedSize.height < maxWidthAndHeight) {
-      _config.value.offset = Offset(
-        _config.value.offset.dx -
-            ((fittedSize.width - _config.value.size!.width) / 2),
-        _config.value.offset.dy -
-            ((fittedSize.height - _config.value.size!.height) / 2),
+      config.value.offset = Offset(
+        config.value.offset.dx -
+            ((fittedSize.width - config.value.size!.width) / 2),
+        config.value.offset.dy -
+            ((fittedSize.height - config.value.size!.height) / 2),
       );
 
       // //移动拦截
-      if (!(widget.onOffsetChanged?.call(_config.value.offset) ?? true)) return;
+      if (!(widget.onOffsetChanged?.call(config.value.offset) ?? true)) return;
 
-      _config.value.size = fittedSize;
+      config.value.size = fittedSize;
 
       //缩放拦截
-      if (!(widget.onSizeChanged?.call(_config.value.size!) ?? true)) return;
+      if (!(widget.onSizeChanged?.call(config.value.size!) ?? true)) return;
 
-      _config.value = _config.value.copy();
+      config.value = config.value.copy();
 
       _recalculateCenter();
     }
   }
 
   void _scalingEnd(DragEndDetails dragEndDetails) {
-    if (_config.value.size != null) {
-      currentUnfittedSize = _config.value.size!;
+    if (config.value.size != null) {
+      currentUnfittedSize = config.value.size!;
     }
     _changeToIdle();
-    if (!(widget.onResizeDone?.call(_config.value.size!) ?? true)) return;
+    if (!(widget.onResizeDone?.call(config.value.size!) ?? true)) return;
   }
 
   void _rotationStart(DragStartDetails dragStartDetails) {
-    rotatingPointerOffset = _config.value.offset;
-    rotatingStartAngle = _config.value.angle;
+    rotatingPointerOffset = config.value.offset;
+    rotatingStartAngle = config.value.angle;
   }
 
   /// 旋转操作
@@ -353,11 +353,11 @@ class ItemCaseState extends State<ItemCase> with SafeState<ItemCase> {
       widget.onOperationStateChanged?.call(_operationState);
     }
 
-    if (_config.value.size == null) return;
+    if (config.value.size == null) return;
 
     rotatingPointerOffset += dragUpdateDetails.delta;
-    final Offset start = _config.value.offset;
-    final Size size = _config.value.size!;
+    final Offset start = config.value.offset;
+    final Size size = config.value.size!;
     final Offset center = size.center(start);
     final Offset directionToPointer = rotatingPointerOffset - center;
     final Offset directionToHandle = start - center;
@@ -372,20 +372,19 @@ class ItemCaseState extends State<ItemCase> with SafeState<ItemCase> {
     final double roundedAngle = (angle / (math.pi / 4)).round() * (math.pi / 4);
     final bool isNearToSnap = (angle - roundedAngle).abs() < 0.1;
 
-    _config.value =
-        _config.value.copy(angle: isNearToSnap ? roundedAngle : angle);
+    config.value =
+        config.value.copy(angle: isNearToSnap ? roundedAngle : angle);
   }
 
   /// 旋转回0度
   void _turnBack() {
-    if (_config.value.angle != 0) {
-      _config.value = _config.value.copy(angle: 0);
+    if (config.value.angle != 0) {
+      config.value = config.value.copy(angle: 0);
     }
   }
 
   void _flip({required bool vertical}) {
-    final Matrix4 newFlipMatrix =
-        _config.value.flipMatrix ?? Matrix4.identity();
+    final Matrix4 newFlipMatrix = config.value.flipMatrix ?? Matrix4.identity();
 
     if (vertical) {
       newFlipMatrix.rotateX(math.pi);
@@ -393,7 +392,7 @@ class ItemCaseState extends State<ItemCase> with SafeState<ItemCase> {
       newFlipMatrix.rotateY(math.pi);
     }
 
-    _config.value = _config.value.copy(flipMatrix: newFlipMatrix);
+    config.value = config.value.copy(flipMatrix: newFlipMatrix);
 
     if (!(widget.onFlipped?.call(newFlipMatrix) ?? true)) return;
 
@@ -419,7 +418,7 @@ class ItemCaseState extends State<ItemCase> with SafeState<ItemCase> {
           previousConfig?.offset != newConfig?.offset ||
           previousConfig?.angle != newConfig?.angle ||
           previousConfig?.flipMatrix != newConfig?.flipMatrix,
-      valueListenable: _config,
+      valueListenable: config,
       builder: (_, Config? config, Widget? child) {
         return Positioned(
           top: config?.offset.dy,
@@ -477,13 +476,13 @@ class ItemCaseState extends State<ItemCase> with SafeState<ItemCase> {
   /// 子控件
   Widget get _child {
     Widget content = widget.child;
-    if (_config.value.size == null) {
+    if (config.value.size == null) {
       content = GetSize(
         onChange: (Size? size) {
-          if (size != null && _config.value.size == null) {
-            _config.value.size = Size(size.width + _caseStyle.iconSize,
+          if (size != null && config.value.size == null) {
+            config.value.size = Size(size.width + _caseStyle.iconSize,
                 size.height + _caseStyle.iconSize);
-            originalSize = _config.value.size!;
+            originalSize = config.value.size!;
             currentUnfittedSize = originalSize;
             safeSetState(() {});
           }
@@ -675,5 +674,5 @@ class ItemCaseController {
     _itemCaseState = null;
   }
 
-  SafeValueNotifier<Config>? get config => _itemCaseState?._config;
+  SafeValueNotifier<Config>? get config => _itemCaseState?.config;
 }

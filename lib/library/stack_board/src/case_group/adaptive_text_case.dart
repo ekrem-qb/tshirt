@@ -11,12 +11,12 @@ const TextStyle _defaultStyle = TextStyle(fontSize: 20);
 /// 自适应文本外壳
 class AdaptiveTextCase extends StatefulWidget {
   const AdaptiveTextCase({
-    Key? key,
+    super.key,
     required this.adaptiveText,
     this.onDelete,
     this.operationState,
     this.onPointerDown,
-  }) : super(key: key);
+  });
 
   @override
   AdaptiveTextCaseState createState() => AdaptiveTextCaseState();

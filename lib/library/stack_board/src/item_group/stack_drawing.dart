@@ -8,15 +8,12 @@ class StackDrawing extends StackBoardItem {
   const StackDrawing({
     this.size = const Size(260, 260),
     Widget background = const SizedBox(width: 260, height: 260),
-    final int? id,
-    final Future<bool> Function()? onDelete,
-    CaseStyle? caseStyle,
+    super.id,
+    super.onDelete,
+    super.caseStyle,
     bool? tapToEdit,
   }) : super(
-          id: id,
-          onDelete: onDelete,
           child: background,
-          caseStyle: caseStyle,
           tapToEdit: tapToEdit ?? false,
         );
 

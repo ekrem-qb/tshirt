@@ -3,10 +3,10 @@ import 'package:flutter_drawing_board/flutter_drawing_board.dart';
 
 class CenterGuides extends StatefulWidget {
   const CenterGuides({
-    Key? key,
+    super.key,
     this.controller,
     this.child,
-  }) : super(key: key);
+  });
 
   final CenterGuidesController? controller;
   final Widget? child;

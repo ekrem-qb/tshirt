@@ -9,12 +9,12 @@ import 'item_case.dart';
 /// 画板外壳
 class DrawingBoardCase extends StatefulWidget {
   const DrawingBoardCase({
-    Key? key,
+    super.key,
     required this.stackDrawing,
     this.onDelete,
     this.operationState = OperationState.editing,
     this.onPointerDown,
-  }) : super(key: key);
+  });
 
   @override
   DrawingBoardCaseState createState() => DrawingBoardCaseState();

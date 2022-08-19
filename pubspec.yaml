@@ -35,6 +35,7 @@ dependencies:
   flutter_drawing_board: ^0.2.7
   flutter_svg: ^1.1.4
   meta: ^1.7.0
+  provider: ^6.0.3
   screenshot: ^1.2.3
 
 

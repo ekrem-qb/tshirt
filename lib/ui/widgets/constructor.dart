@@ -7,7 +7,7 @@ import '../../library/stack_board/stack_board.dart';
 import '../../resources/images.dart';
 
 class ConstructorScreen extends StatefulWidget {
-  const ConstructorScreen({Key? key}) : super(key: key);
+  const ConstructorScreen({super.key});
 
   @override
   ConstructorScreenState createState() => ConstructorScreenState();
