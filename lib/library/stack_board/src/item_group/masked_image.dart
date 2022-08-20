@@ -46,6 +46,13 @@ class MaskedImage extends StackBoardItem with ChangeNotifier {
 
   Size caseSize = defaultSize;
 
+  Matrix4 _flipMatrix = Matrix4.identity();
+  Matrix4 get flipMatrix => _flipMatrix;
+  set flipMatrix(Matrix4 flipMatrix) {
+    _flipMatrix = flipMatrix;
+    notifyListeners();
+  }
+
   String? _maskSvgString;
   String? get maskSvgString => _maskSvgString;
   set maskSvgString(String? newSvgString) {
@@ -115,6 +122,11 @@ class MaskedImage extends StackBoardItem with ChangeNotifier {
       _maskSvgOldSize = _maskSvgCurrentSize;
       _renderSvg();
     }
+    return true;
+  }
+
+  bool? onFlipped(Matrix4 newFlipMatrix) {
+    flipMatrix = Matrix4.fromFloat64List(newFlipMatrix.storage);
     return true;
   }
 

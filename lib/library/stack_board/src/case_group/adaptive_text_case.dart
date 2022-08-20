@@ -51,6 +51,8 @@ class AdaptiveTextCaseState extends State<AdaptiveTextCase>
   /// 文本样式
   TextStyle get _style => widget.adaptiveText.style ?? _defaultStyle;
 
+  Matrix4 flipMatrix = Matrix4.identity();
+
   /// 计算文本大小
   Size _calculateTextSize() {
     final TextPainter textPainter = TextPainter(
@@ -106,6 +108,11 @@ class AdaptiveTextCaseState extends State<AdaptiveTextCase>
 
         return;
       },
+      onFlipped: (newFlipMatrix) {
+        flipMatrix = newFlipMatrix;
+        setState(() {});
+        return true;
+      },
       child: _buildEditingBox,
     );
   }
@@ -124,20 +131,24 @@ class AdaptiveTextCaseState extends State<AdaptiveTextCase>
         padding: const EdgeInsets.symmetric(horizontal: 4),
         child: SizedBox(
           width: _calculateTextSize().width + 32,
-          child: TextFormField(
-            enabled: _isEditing,
-            focusNode: _focusNode,
-            decoration: const InputDecoration(border: InputBorder.none),
-            initialValue: _text,
-            onChanged: (String newText) {
-              _text = newText;
-              _calculateTextOffset();
-              safeSetState(() {});
-            },
-            style: _style,
-            textAlign: widget.adaptiveText.textAlign ?? TextAlign.center,
-            textDirection: widget.adaptiveText.textDirection,
-            maxLines: widget.adaptiveText.maxLines,
+          child: Transform(
+            transform: flipMatrix,
+            alignment: Alignment.center,
+            child: TextFormField(
+              enabled: _isEditing,
+              focusNode: _focusNode,
+              decoration: const InputDecoration(border: InputBorder.none),
+              initialValue: _text,
+              onChanged: (String newText) {
+                _text = newText;
+                _calculateTextOffset();
+                safeSetState(() {});
+              },
+              style: _style,
+              textAlign: widget.adaptiveText.textAlign ?? TextAlign.center,
+              textDirection: widget.adaptiveText.textDirection,
+              maxLines: widget.adaptiveText.maxLines,
+            ),
           ),
         ),
       ),

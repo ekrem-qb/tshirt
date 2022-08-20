@@ -420,8 +420,7 @@ class ItemCaseState extends State<ItemCase> with SafeState<ItemCase> {
       shouldRebuild: (Config? previousConfig, Config? newConfig) =>
           previousConfig?.size != newConfig?.size ||
           previousConfig?.offset != newConfig?.offset ||
-          previousConfig?.angle != newConfig?.angle ||
-          previousConfig?.flipMatrix != newConfig?.flipMatrix,
+          previousConfig?.angle != newConfig?.angle,
       valueListenable: config,
       builder: (_, Config? config, Widget? child) {
         return Positioned(
@@ -459,11 +458,7 @@ class ItemCaseState extends State<ItemCase> with SafeState<ItemCase> {
                       fit: StackFit.passthrough,
                       children: <Widget>[
                         if (operationState != OperationState.complete) _border,
-                        Transform(
-                          transform: config?.flipMatrix ?? Matrix4.identity(),
-                          alignment: Alignment.center,
-                          child: _child,
-                        ),
+                        _child,
                         if (operationState != OperationState.complete) _flipY,
                         if (operationState != OperationState.complete) _rotate,
                         if (operationState != OperationState.complete) _flipX,

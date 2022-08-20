@@ -49,6 +49,8 @@ class DrawingBoardCaseState extends State<DrawingBoardCase>
   /// 是否正在编辑
   bool _isEditing = true;
 
+  Matrix4 flipMatrix = Matrix4.identity();
+
   @override
   void initState() {
     super.initState();
@@ -110,6 +112,11 @@ class DrawingBoardCaseState extends State<DrawingBoardCase>
 
         return;
       },
+      onFlipped: (newFlipMatrix) {
+        flipMatrix = newFlipMatrix;
+        setState(() {});
+        return true;
+      },
       child: FittedBox(
         child: SizedBox.fromSize(
           size: widget.stackDrawing.size,
@@ -118,14 +125,18 @@ class DrawingBoardCaseState extends State<DrawingBoardCase>
               FittedBox(
                 child: SizedBox.fromSize(
                   size: widget.stackDrawing.size,
-                  child: DrawingBoard(
-                    controller: _drawingController,
-                    background: widget.stackDrawing.child,
-                    drawingCallback: (bool isDrawing) {
-                      if (_isDrawing.value != isDrawing) {
-                        _isDrawing.value = isDrawing;
-                      }
-                    },
+                  child: Transform(
+                    transform: flipMatrix,
+                    alignment: Alignment.center,
+                    child: DrawingBoard(
+                      controller: _drawingController,
+                      background: widget.stackDrawing.child,
+                      drawingCallback: (bool isDrawing) {
+                        if (_isDrawing.value != isDrawing) {
+                          _isDrawing.value = isDrawing;
+                        }
+                      },
+                    ),
                   ),
                 ),
               ),

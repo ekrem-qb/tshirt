@@ -74,6 +74,7 @@ class _CaseWidget extends StatelessWidget {
         }
         return true;
       },
+      onFlipped: maskedImage!.onFlipped,
       operationState: operationState,
       caseStyle: caseStyle,
       child: maskShader != null
@@ -112,8 +113,32 @@ class _ImageWidget extends StatelessWidget {
                       loadingProgress.expectedTotalBytes!,
                 ),
               )
-            : child;
+            : _TransformedImageWidget(
+                child: child,
+              );
       },
+    );
+  }
+}
+
+class _TransformedImageWidget extends StatelessWidget {
+  const _TransformedImageWidget({
+    required this.child,
+  });
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    // Doesn't work, maybe because of Matrix4 comparison
+    // final flipMatrix = context.select((MaskedImage model) => model.flipMatrix);
+
+    final flipMatrix = context.watch<MaskedImage>().flipMatrix;
+
+    return Transform(
+      transform: flipMatrix,
+      alignment: Alignment.center,
+      child: child,
     );
   }
 }
