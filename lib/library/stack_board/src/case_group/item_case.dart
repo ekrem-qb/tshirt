@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_drawing_board/flutter_drawing_board.dart';
 
+import '../../../ffloat/ffloat.dart';
 import '../board.dart';
 import '../helper/case_style.dart';
 import '../helper/operat_state.dart';
@@ -49,7 +50,7 @@ class ItemCase extends StatefulWidget {
     this.controller,
     required this.child,
     this.isCentered = false,
-    this.tools,
+    this.editTools,
     this.caseStyle = const CaseStyle(),
     this.tapToEdit = false,
     this.operationState = OperationState.idle,
@@ -73,7 +74,7 @@ class ItemCase extends StatefulWidget {
   final Widget child;
 
   /// 工具层
-  final Widget? tools;
+  final Widget? editTools;
 
   /// 是否进行居中对齐(自动包裹Center)
   final bool isCentered;
@@ -119,7 +120,18 @@ class ItemCaseState extends State<ItemCase> with SafeState<ItemCase> {
   late SafeValueNotifier<Config> config;
 
   /// 操作状态
-  late OperationState _operationState;
+  OperationState _operationState = OperationState.idle;
+  OperationState get operationState => _operationState;
+  set operationState(OperationState newOperationState) {
+    if (newOperationState == OperationState.editing) {
+      _fFloatController.show();
+    } else {
+      WidgetsBinding.instance
+          .addPostFrameCallback((_) => _fFloatController.dismiss());
+    }
+    _operationState = newOperationState;
+    widget.onOperationStateChanged?.call(newOperationState);
+  }
 
   /// 外框样式
   CaseStyle get _caseStyle => widget.caseStyle ?? const CaseStyle();
@@ -136,11 +148,12 @@ class ItemCaseState extends State<ItemCase> with SafeState<ItemCase> {
   late Size currentUnfittedSize;
 
   late StackBoardController? _boardController;
+  final FFloatController _fFloatController = FFloatController();
 
   @override
   void initState() {
     super.initState();
-    _operationState = widget.operationState ?? OperationState.idle;
+    operationState = widget.operationState ?? OperationState.idle;
     config = SafeValueNotifier<Config>(Config());
     minWidthAndHeight = _caseStyle.iconSize * 3;
 
@@ -167,9 +180,8 @@ class ItemCaseState extends State<ItemCase> with SafeState<ItemCase> {
   void didUpdateWidget(covariant ItemCase oldWidget) {
     if (widget.operationState != null &&
         widget.operationState != oldWidget.operationState) {
-      _operationState = widget.operationState!;
+      operationState = widget.operationState!;
       safeSetState(() {});
-      widget.onOperationStateChanged?.call(_operationState);
     }
     super.didUpdateWidget(oldWidget);
   }
@@ -194,23 +206,21 @@ class ItemCaseState extends State<ItemCase> with SafeState<ItemCase> {
   /// 点击
   void _onPointerDown() {
     if (widget.tapToEdit) {
-      if (_operationState != OperationState.editing) {
-        _operationState = OperationState.editing;
+      if (operationState != OperationState.editing) {
+        operationState = OperationState.editing;
         safeSetState(() {});
       }
-    } else if (_operationState == OperationState.complete) {
-      safeSetState(() => _operationState = OperationState.idle);
+    } else if (operationState == OperationState.complete) {
+      safeSetState(() => operationState = OperationState.idle);
     }
 
     widget.onPointerDown?.call();
-    widget.onOperationStateChanged?.call(_operationState);
   }
 
   /// 切回常规状态
   void _changeToIdle() {
-    if (_operationState != OperationState.idle) {
-      _operationState = OperationState.idle;
-      widget.onOperationStateChanged?.call(_operationState);
+    if (operationState != OperationState.idle) {
+      operationState = OperationState.idle;
 
       safeSetState(() {});
     }
@@ -223,16 +233,14 @@ class ItemCaseState extends State<ItemCase> with SafeState<ItemCase> {
 
   /// 移动操作
   void _moveHandle(DragUpdateDetails dragUpdateDetails) {
-    if (_operationState != OperationState.moving) {
-      if (_operationState == OperationState.scaling ||
-          _operationState == OperationState.rotating) {
-        _operationState = OperationState.moving;
+    if (operationState != OperationState.moving) {
+      if (operationState == OperationState.scaling ||
+          operationState == OperationState.rotating) {
+        operationState = OperationState.moving;
       } else {
-        _operationState = OperationState.moving;
+        operationState = OperationState.moving;
         safeSetState(() {});
       }
-
-      widget.onOperationStateChanged?.call(_operationState);
     }
 
     Offset newOffset = movingStartOffset +
@@ -264,16 +272,14 @@ class ItemCaseState extends State<ItemCase> with SafeState<ItemCase> {
     bool keepAspectRatio = true,
   }) {
     if (cancelEditMode) {
-      if (_operationState != OperationState.scaling) {
-        if (_operationState == OperationState.moving ||
-            _operationState == OperationState.rotating) {
-          _operationState = OperationState.scaling;
+      if (operationState != OperationState.scaling) {
+        if (operationState == OperationState.moving ||
+            operationState == OperationState.rotating) {
+          operationState = OperationState.scaling;
         } else {
-          _operationState = OperationState.scaling;
+          operationState = OperationState.scaling;
           safeSetState(() {});
         }
-
-        widget.onOperationStateChanged?.call(_operationState);
       }
     }
 
@@ -341,16 +347,14 @@ class ItemCaseState extends State<ItemCase> with SafeState<ItemCase> {
 
   /// 旋转操作
   void _rotateHandle(DragUpdateDetails dragUpdateDetails) {
-    if (_operationState != OperationState.rotating) {
-      if (_operationState == OperationState.moving ||
-          _operationState == OperationState.scaling) {
-        _operationState = OperationState.rotating;
+    if (operationState != OperationState.rotating) {
+      if (operationState == OperationState.moving ||
+          operationState == OperationState.scaling) {
+        operationState = OperationState.rotating;
       } else {
-        _operationState = OperationState.rotating;
+        operationState = OperationState.rotating;
         safeSetState(() {});
       }
-
-      widget.onOperationStateChanged?.call(_operationState);
     }
 
     if (config.value.size == null) return;
@@ -401,9 +405,9 @@ class ItemCaseState extends State<ItemCase> with SafeState<ItemCase> {
 
   /// 主体鼠标指针样式
   MouseCursor get _cursor {
-    if (_operationState == OperationState.moving) {
+    if (operationState == OperationState.moving) {
       return SystemMouseCursors.grabbing;
-    } else if (_operationState == OperationState.editing) {
+    } else if (operationState == OperationState.editing) {
       return SystemMouseCursors.click;
     }
 
@@ -427,42 +431,51 @@ class ItemCaseState extends State<ItemCase> with SafeState<ItemCase> {
           height: config?.size?.height,
           child: Transform.rotate(
             angle: config?.angle ?? 0,
-            child: MouseRegion(
-              cursor: _cursor,
-              child: Listener(
-                onPointerDown: (_) => _onPointerDown(),
-                child: GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onPanStart: _movingStart,
-                  onPanUpdate: _moveHandle,
-                  onPanEnd: (_) {
-                    _changeToIdle();
-                    _boardController?.toggleCenterGuides(
-                      newVerticalState: false,
-                      newHorizontalState: false,
-                    );
-                  },
-                  child: Stack(
-                    fit: StackFit.passthrough,
-                    children: <Widget>[
-                      if (_operationState != OperationState.complete) _border,
-                      Transform(
-                        transform: config?.flipMatrix ?? Matrix4.identity(),
-                        alignment: Alignment.center,
-                        child: _child,
-                      ),
-                      if (widget.tools != null) _tools,
-                      if (_operationState != OperationState.complete) _flipY,
-                      if (_operationState != OperationState.complete) _rotate,
-                      if (_operationState != OperationState.complete) _flipX,
-                      if (widget.onDelete != null &&
-                          _operationState != OperationState.complete)
-                        _delete,
-                      if (widget.isEditable &&
-                          _operationState != OperationState.complete)
-                        _edit,
-                      if (_operationState != OperationState.complete) _scale,
-                    ],
+            child: FFloat(
+              (setter, contentState) {
+                return widget.editTools != null
+                    ? widget.editTools!
+                    : const SizedBox.shrink();
+              },
+              controller: _fFloatController,
+              tapToShow: false,
+              canTouchOutside: false,
+              anchor: MouseRegion(
+                cursor: _cursor,
+                child: Listener(
+                  onPointerDown: (_) => _onPointerDown(),
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onPanStart: _movingStart,
+                    onPanUpdate: _moveHandle,
+                    onPanEnd: (_) {
+                      _changeToIdle();
+                      _boardController?.toggleCenterGuides(
+                        newVerticalState: false,
+                        newHorizontalState: false,
+                      );
+                    },
+                    child: Stack(
+                      fit: StackFit.passthrough,
+                      children: <Widget>[
+                        if (operationState != OperationState.complete) _border,
+                        Transform(
+                          transform: config?.flipMatrix ?? Matrix4.identity(),
+                          alignment: Alignment.center,
+                          child: _child,
+                        ),
+                        if (operationState != OperationState.complete) _flipY,
+                        if (operationState != OperationState.complete) _rotate,
+                        if (operationState != OperationState.complete) _flipX,
+                        if (widget.onDelete != null &&
+                            operationState != OperationState.complete)
+                          _delete,
+                        if (widget.isEditable &&
+                            operationState != OperationState.complete)
+                          _edit,
+                        if (operationState != OperationState.complete) _scale,
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -522,16 +535,14 @@ class ItemCaseState extends State<ItemCase> with SafeState<ItemCase> {
         cursor: SystemMouseCursors.click,
         child: GestureDetector(
           onTap: () {
-            if (_operationState == OperationState.editing) {
-              _operationState = OperationState.idle;
+            if (operationState == OperationState.editing) {
+              operationState = OperationState.idle;
             } else {
-              _operationState = OperationState.editing;
+              operationState = OperationState.editing;
             }
-            safeSetState(() {});
-            widget.onOperationStateChanged?.call(_operationState);
           },
           child: _toolCase(
-            Icon(_operationState == OperationState.editing
+            Icon(operationState == OperationState.editing
                 ? Icons.border_color
                 : Icons.edit),
           ),
@@ -647,14 +658,6 @@ class ItemCaseState extends State<ItemCase> with SafeState<ItemCase> {
           child: child,
         ),
       ),
-    );
-  }
-
-  /// 工具栏
-  Widget get _tools {
-    return Padding(
-      padding: EdgeInsets.all(_caseStyle.iconSize / 2),
-      child: widget.tools!,
     );
   }
 }

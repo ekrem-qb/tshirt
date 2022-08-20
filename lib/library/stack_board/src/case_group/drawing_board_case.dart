@@ -95,7 +95,7 @@ class DrawingBoardCaseState extends State<DrawingBoardCase>
       isEditable: true,
       onPointerDown: widget.onPointerDown,
       tapToEdit: widget.stackDrawing.tapToEdit,
-      tools: _tools,
+      editTools: _tools,
       operationState: _operationState,
       onDelete: widget.onDelete,
       caseStyle: widget.stackDrawing.caseStyle,
@@ -146,46 +146,32 @@ class DrawingBoardCaseState extends State<DrawingBoardCase>
 
   /// 工具层
   Widget? get _tools {
-    return ExValueBuilder<bool>(
-      valueListenable: _isDrawing,
-      builder: (_, bool? drawing, __) {
-        return Offstage(
-          offstage: !_isEditing || drawing!,
-          child: Stack(
-            children: <Widget>[
-              _toolBar,
-              Align(alignment: Alignment.bottomRight, child: _buildActions),
-            ],
-          ),
-        );
-      },
+    return Padding(
+      padding: EdgeInsets.all(widget.stackDrawing.caseStyle!.iconSize / 2),
+      child: Column(
+        children: <Widget>[
+          _toolBar,
+          _buildActions,
+        ],
+      ),
     );
   }
 
   /// 工具栏
   Widget get _toolBar {
-    return FittedBox(
-      fit: BoxFit.none,
-      child: Align(
-        alignment: Alignment.topLeft,
-        child: Container(
-            width: widget.stackDrawing.caseStyle!.iconSize * 1.5,
-            color: Colors.white,
-            child: Column(
-              children: <Widget>[
-                _buildToolItem(PaintType.simpleLine, Icons.edit,
-                    () => _drawingController.setType = PaintType.simpleLine),
-                _buildToolItem(PaintType.smoothLine, Icons.brush,
-                    () => _drawingController.setType = PaintType.smoothLine),
-                _buildToolItem(PaintType.straightLine, Icons.show_chart,
-                    () => _drawingController.setType = PaintType.straightLine),
-                _buildToolItem(PaintType.rectangle, Icons.crop_din,
-                    () => _drawingController.setType = PaintType.rectangle),
-                _buildToolItem(PaintType.eraser, Icons.auto_fix_normal,
-                    () => _drawingController.setType = PaintType.eraser),
-              ],
-            )),
-      ),
+    return Row(
+      children: <Widget>[
+        _buildToolItem(PaintType.simpleLine, Icons.edit,
+            () => _drawingController.setType = PaintType.simpleLine),
+        _buildToolItem(PaintType.smoothLine, Icons.brush,
+            () => _drawingController.setType = PaintType.smoothLine),
+        _buildToolItem(PaintType.straightLine, Icons.show_chart,
+            () => _drawingController.setType = PaintType.straightLine),
+        _buildToolItem(PaintType.rectangle, Icons.crop_din,
+            () => _drawingController.setType = PaintType.rectangle),
+        _buildToolItem(PaintType.eraser, Icons.auto_fix_normal,
+            () => _drawingController.setType = PaintType.eraser),
+      ],
     );
   }
 
@@ -220,96 +206,80 @@ class DrawingBoardCaseState extends State<DrawingBoardCase>
   Widget get _buildActions {
     final double iconSize = widget.stackDrawing.caseStyle!.iconSize;
 
-    return Container(
-      height: iconSize * 1.5,
-      color: Colors.white,
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        padding: EdgeInsets.zero,
-        child: Row(
-          children: <Widget>[
-            Container(
-              height: iconSize * 1.5,
-              width: 80,
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: SliderTheme(
-                data: SliderThemeData(
-                  thumbShape: RoundSliderThumbShape(
-                    enabledThumbRadius: iconSize / 2.5,
-                    elevation: 0,
-                  ),
-                  overlayShape: const RoundSliderOverlayShape(overlayRadius: 0),
-                ),
-                child: ExValueBuilder<double>(
-                  valueListenable: _indicator,
-                  builder: (_, double? ind, ___) {
-                    return Slider(
-                      value: ind ?? 1,
-                      max: 50,
-                      min: 1,
-                      divisions: 50,
-                      label: ind?.floor().toString(),
-                      onChanged: (double newValue) =>
-                          _indicator.value = newValue,
-                      onChangeEnd: (double newValue) =>
-                          _drawingController.setThickness = newValue,
-                    );
-                  },
-                ),
+    return Row(
+      children: <Widget>[
+        Container(
+          height: iconSize * 1.5,
+          width: 80,
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: SliderTheme(
+            data: SliderThemeData(
+              thumbShape: RoundSliderThumbShape(
+                enabledThumbRadius: iconSize / 2.5,
+                elevation: 0,
               ),
+              overlayShape: const RoundSliderOverlayShape(overlayRadius: 0),
             ),
-            SizedBox(
-              width: iconSize,
-              height: iconSize,
-              child: ExValueBuilder<DrawConfig?>(
-                valueListenable: _drawingController.drawConfig,
-                shouldRebuild: (DrawConfig? previousDrawConfig,
-                        DrawConfig? newDrawConfig) =>
-                    previousDrawConfig!.color != newDrawConfig!.color,
-                builder: (_, DrawConfig? drawConfig, ___) {
-                  return TextButton(
-                    onPressed: _pickColor,
-                    style: TextButton.styleFrom(
-                      padding: EdgeInsets.zero,
-                      backgroundColor: drawConfig?.color,
-                      shape: const RoundedRectangleBorder(),
-                    ),
-                    child: const SizedBox.shrink(),
-                  );
-                },
-              ),
+            child: ExValueBuilder<double>(
+              valueListenable: _indicator,
+              builder: (_, double? ind, ___) {
+                return Slider(
+                  value: ind ?? 1,
+                  max: 50,
+                  min: 1,
+                  divisions: 50,
+                  label: ind?.floor().toString(),
+                  onChanged: (double newValue) => _indicator.value = newValue,
+                  onChangeEnd: (double newValue) =>
+                      _drawingController.setThickness = newValue,
+                );
+              },
             ),
-            GestureDetector(
-              onTap: () => _drawingController.undo(),
-              child: SizedBox(
-                width: iconSize * 1.6,
-                child: Icon(CupertinoIcons.arrow_turn_up_left, size: iconSize),
-              ),
-            ),
-            GestureDetector(
-              onTap: () => _drawingController.redo(),
-              child: SizedBox(
-                width: iconSize * 1.6,
-                child: Icon(CupertinoIcons.arrow_turn_up_right, size: iconSize),
-              ),
-            ),
-            GestureDetector(
-              onTap: () => _drawingController.turn(),
-              child: SizedBox(
-                width: iconSize * 1.6,
-                child: Icon(CupertinoIcons.rotate_right, size: iconSize),
-              ),
-            ),
-            GestureDetector(
-              onTap: () => _drawingController.clear(),
-              child: SizedBox(
-                width: iconSize * 1.6,
-                child: Icon(Icons.clear_all, size: iconSize),
-              ),
-            ),
-          ],
+          ),
         ),
-      ),
+        SizedBox(
+          width: iconSize,
+          height: iconSize,
+          child: ExValueBuilder<DrawConfig?>(
+            valueListenable: _drawingController.drawConfig,
+            shouldRebuild:
+                (DrawConfig? previousDrawConfig, DrawConfig? newDrawConfig) =>
+                    previousDrawConfig!.color != newDrawConfig!.color,
+            builder: (_, DrawConfig? drawConfig, ___) {
+              return TextButton(
+                onPressed: _pickColor,
+                style: TextButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                  backgroundColor: drawConfig?.color,
+                  shape: const RoundedRectangleBorder(),
+                ),
+                child: const SizedBox.shrink(),
+              );
+            },
+          ),
+        ),
+        GestureDetector(
+          onTap: () => _drawingController.undo(),
+          child: SizedBox(
+            width: iconSize * 1.6,
+            child: Icon(CupertinoIcons.arrow_turn_up_left, size: iconSize),
+          ),
+        ),
+        GestureDetector(
+          onTap: () => _drawingController.redo(),
+          child: SizedBox(
+            width: iconSize * 1.6,
+            child: Icon(CupertinoIcons.arrow_turn_up_right, size: iconSize),
+          ),
+        ),
+        GestureDetector(
+          onTap: () => _drawingController.clear(),
+          child: SizedBox(
+            width: iconSize * 1.6,
+            child: Icon(Icons.clear_all, size: iconSize),
+          ),
+        ),
+      ],
     );
   }
 }
