@@ -1,10 +1,11 @@
-import 'dart:io';
 import 'dart:math';
 import 'dart:ui' as ui;
 
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import '../../../../ui/widgets/image_choose.dart';
+import '../../../image_provider_extension/image_provider_extension.dart';
+import '../case_group/item_case.dart';
 import '../helper/case_style.dart';
 import 'stack_board_item.dart';
 
@@ -41,10 +42,11 @@ class MaskedImage extends StackBoardItem with ChangeNotifier {
     );
   }
 
-  static const Size defaultSize = Size(355, 236.5);
+  static const Size defaultSize = Size(100, 100);
   static const double sizeChangeTreshold = 1.5;
 
   Size caseSize = defaultSize;
+  final ItemCaseController caseController = ItemCaseController();
 
   Matrix4 _flipMatrix = Matrix4.identity();
   Matrix4 get flipMatrix => _flipMatrix;
@@ -73,15 +75,31 @@ class MaskedImage extends StackBoardItem with ChangeNotifier {
 
   ImageProvider get image => _image;
 
-  set image(ImageProvider image) {
-    _image = image;
-    notifyListeners();
+  set image(ImageProvider newImage) {
+    _image = newImage;
+    calculateImageSize();
   }
+
+  Size? imageSize;
 
   ImageShader? _maskShader;
   ImageShader? get maskShader => _maskShader;
   set maskShader(ImageShader? maskShader) {
     _maskShader = maskShader;
+    notifyListeners();
+  }
+
+  void calculateImageSize() async {
+    final imageInfo = await image.getImageInfo();
+    imageSize = ui.Size(
+      (imageInfo.image.width / 4) + (caseStyle?.iconSize ?? 24),
+      (imageInfo.image.height / 4) + (caseStyle?.iconSize ?? 24),
+    );
+    final offset = ui.Offset(
+        imageSize!.width - caseController.config!.value.size!.width,
+        imageSize!.height - caseController.config!.value.size!.height);
+    caseController.setOriginalSize(imageSize!);
+    caseController.resizeCase(offset);
     notifyListeners();
   }
 
@@ -93,12 +111,11 @@ class MaskedImage extends StackBoardItem with ChangeNotifier {
   }
 
   bool? onSizeChanged(Size newCaseSize) {
+    caseSize = Size(
+      newCaseSize.width - (caseStyle?.iconSize ?? 24),
+      newCaseSize.height - (caseStyle?.iconSize ?? 24),
+    );
     if (_maskSvgString != null) {
-      caseSize = Size(
-        newCaseSize.width - (caseStyle?.iconSize ?? 24),
-        newCaseSize.height - (caseStyle?.iconSize ?? 24),
-      );
-
       _calculateSvgSize();
 
       final double oldSize =
@@ -130,18 +147,22 @@ class MaskedImage extends StackBoardItem with ChangeNotifier {
     return true;
   }
 
-  void onEdit() {
-    FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: <String>['svg'],
-    ).then((FilePickerResult? result) async {
-      if (result != null) {
-        final File file = File(result.files.single.path!);
-        maskSvgString = await file.readAsString();
-      } else {
-        maskSvgString = null;
-      }
-    });
+  void chooseMask(BuildContext context) async {
+    final result = await showModalBottomSheet<String?>(
+      context: context,
+      builder: maskChooseWidget,
+    );
+    maskSvgString = result;
+  }
+
+  void chooseImage(BuildContext context) async {
+    final result = await showModalBottomSheet<ImageProvider>(
+      context: context,
+      builder: imageChooseWidget,
+    );
+    if (result != null) {
+      image = result;
+    }
   }
 
   Future<void> _renderSvg() async {

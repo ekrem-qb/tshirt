@@ -1,10 +1,8 @@
-import 'dart:io';
-
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 import '../../library/stack_board/stack_board.dart';
 import '../../resources/images.dart';
+import 'image_choose.dart';
 
 class ConstructorScreen extends StatefulWidget {
   const ConstructorScreen({super.key});
@@ -15,28 +13,6 @@ class ConstructorScreen extends StatefulWidget {
 
 class ConstructorScreenState extends State<ConstructorScreen> {
   late StackBoardController _boardController;
-
-  Widget imageChooseWidget(context) {
-    return Center(
-      child: ElevatedButton.icon(
-        onPressed: () => _pickupFile(context),
-        icon: const Icon(Icons.file_open_rounded),
-        label: const Text('File'),
-      ),
-    );
-  }
-
-  void _pickupFile(BuildContext context) async {
-    final result = await FilePicker.platform.pickFiles(
-      type: FileType.image,
-    );
-    if (result != null) {
-      final file = File(result.files.single.path!);
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        Navigator.pop(context, FileImage(file));
-      });
-    }
-  }
 
   @override
   void initState() {

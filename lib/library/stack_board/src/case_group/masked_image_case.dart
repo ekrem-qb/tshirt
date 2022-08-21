@@ -26,7 +26,9 @@ class MaskedImageCase extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => MaskedImage(image),
+      create: (context) {
+        return MaskedImage(image)..calculateImageSize();
+      },
       child: _CaseWidget(
         onPointerDown: onPointerDown,
         image: image,
@@ -48,35 +50,31 @@ class _CaseWidget extends StatelessWidget {
   });
 
   final void Function()? onPointerDown;
-  final ImageProvider<Object> image;
+  final ImageProvider image;
   final void Function()? onDelete;
   final OperationState? operationState;
   final CaseStyle? caseStyle;
 
   @override
   Widget build(BuildContext context) {
-    MaskedImage? maskedImage;
-    final ImageShader? maskShader = context.select((MaskedImage model) {
-      maskedImage ??= model;
+    MaskedImage? maskedImageModel;
+    final maskShader = context.select((MaskedImage model) {
+      maskedImageModel ??= model;
       return model.maskShader;
     });
 
     return ItemCase(
+      controller: maskedImageModel!.caseController,
       isEditable: true,
       onPointerDown: onPointerDown,
-      tapToEdit: maskedImage!.tapToEdit,
+      tapToEdit: maskedImageModel!.tapToEdit,
       onDelete: onDelete,
-      onSizeChanged: maskedImage!.onSizeChanged,
-      onResizeDone: maskedImage!.onResizeDone,
-      onOperationStateChanged: (OperationState operationState) {
-        if (operationState == OperationState.editing) {
-          maskedImage!.onEdit();
-        }
-        return true;
-      },
-      onFlipped: maskedImage!.onFlipped,
+      onSizeChanged: maskedImageModel!.onSizeChanged,
+      onResizeDone: maskedImageModel!.onResizeDone,
+      onFlipped: maskedImageModel!.onFlipped,
       operationState: operationState,
       caseStyle: caseStyle,
+      editTools: _EditToolsWidget(maskedImageModel!),
       child: maskShader != null
           ? ShaderMask(
               blendMode: BlendMode.dstIn,
@@ -93,52 +91,52 @@ class _ImageWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final image = context.select((MaskedImage model) => model.image);
+    // Doesn't work, maybe because of Matrix4 comparison
+    // final flipMatrix = context.select((MaskedImage model) => model.flipMatrix);
+    final MaskedImage maskedImageModel = context.watch<MaskedImage>();
 
-    return Image(
-      image: image,
-      width: MaskedImage.defaultSize.width,
-      height: MaskedImage.defaultSize.height,
-      fit: BoxFit.contain,
-      filterQuality: FilterQuality.medium,
-      loadingBuilder: (
-        BuildContext context,
-        Widget child,
-        ImageChunkEvent? loadingProgress,
-      ) {
-        return loadingProgress != null
-            ? Center(
-                child: CircularProgressIndicator(
-                  value: loadingProgress.cumulativeBytesLoaded /
-                      loadingProgress.expectedTotalBytes!,
-                ),
-              )
-            : _TransformedImageWidget(
-                child: child,
-              );
-      },
-    );
+    if (maskedImageModel.imageSize != null) {
+      return Transform(
+        transform: maskedImageModel.flipMatrix,
+        alignment: Alignment.center,
+        child: Image(
+          image: maskedImageModel.image,
+          width: maskedImageModel.imageSize!.width,
+          height: maskedImageModel.imageSize!.height,
+          fit: BoxFit.contain,
+          filterQuality: FilterQuality.medium,
+        ),
+      );
+    } else {
+      return SizedBox(
+        width: MaskedImage.defaultSize.width,
+        height: MaskedImage.defaultSize.height,
+        child: const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
   }
 }
 
-class _TransformedImageWidget extends StatelessWidget {
-  const _TransformedImageWidget({
-    required this.child,
-  });
+class _EditToolsWidget extends StatelessWidget {
+  const _EditToolsWidget(this.maskedImageModel);
 
-  final Widget child;
+  final MaskedImage maskedImageModel;
 
   @override
   Widget build(BuildContext context) {
-    // Doesn't work, maybe because of Matrix4 comparison
-    // final flipMatrix = context.select((MaskedImage model) => model.flipMatrix);
-
-    final flipMatrix = context.watch<MaskedImage>().flipMatrix;
-
-    return Transform(
-      transform: flipMatrix,
-      alignment: Alignment.center,
-      child: child,
+    return Row(
+      children: [
+        ElevatedButton(
+          onPressed: () => maskedImageModel.chooseImage(context),
+          child: const Text('Image'),
+        ),
+        ElevatedButton(
+          onPressed: () => maskedImageModel.chooseMask(context),
+          child: const Text('Mask'),
+        ),
+      ],
     );
   }
 }

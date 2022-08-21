@@ -137,7 +137,7 @@ class ItemCaseState extends State<ItemCase> with SafeState<ItemCase> {
   CaseStyle get _caseStyle => widget.caseStyle ?? const CaseStyle();
 
   static const int moveSnappingTreshold = 15;
-  late final Size originalSize;
+  late Size originalSize;
   late final double minWidthAndHeight;
   late double maxWidthAndHeight;
   late Offset center;
@@ -198,7 +198,9 @@ class ItemCaseState extends State<ItemCase> with SafeState<ItemCase> {
             ?.paintBounds
             .center ??
         Offset.zero;
-    final Offset selfCenter = context.size?.center(Offset.zero) ?? Offset.zero;
+    final Offset selfCenter = config.value.size?.center(Offset.zero) ??
+        context.size?.center(Offset.zero) ??
+        Offset.zero;
     center = ownerCenter - selfCenter;
     return center;
   }
@@ -671,6 +673,11 @@ class ItemCaseController {
       cancelEditMode: false,
       keepAspectRatio: false,
     );
+    _itemCaseState?.safeSetState(() => {});
+  }
+
+  void setOriginalSize(Size newSize) {
+    _itemCaseState?.originalSize = newSize;
   }
 
   void dispose() {
