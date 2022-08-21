@@ -535,6 +535,7 @@ class ItemCaseState extends State<ItemCase> with SafeState<ItemCase> {
             } else {
               operationState = OperationState.editing;
             }
+            setState(() {});
           },
           child: _toolCase(
             Icon(operationState == OperationState.editing
@@ -553,7 +554,11 @@ class ItemCaseState extends State<ItemCase> with SafeState<ItemCase> {
       child: MouseRegion(
         cursor: SystemMouseCursors.click,
         child: GestureDetector(
-          onTap: () => widget.onDelete?.call(),
+          onTap: () {
+            _fFloatController.dismiss();
+            _fFloatController.dispose();
+            widget.onDelete?.call();
+          },
           child: _toolCase(const Icon(Icons.clear)),
         ),
       ),
