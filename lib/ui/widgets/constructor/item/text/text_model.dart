@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import '../item_model.dart';
 
 /// 自适应文本
-class AdaptiveText extends StackBoardItem {
-  const AdaptiveText(
+class TextItem extends Item {
+  const TextItem(
     this.data, {
     this.style,
     this.textAlign,
@@ -55,7 +55,7 @@ class AdaptiveText extends StackBoardItem {
   final String? semanticsLabel;
 
   @override
-  AdaptiveText copyWith({
+  TextItem copyWith({
     String? data,
     int? id,
     Widget? child,
@@ -73,7 +73,7 @@ class AdaptiveText extends StackBoardItem {
     CaseStyle? caseStyle,
     bool? tapToEdit,
   }) {
-    return AdaptiveText(
+    return TextItem(
       data ?? this.data,
       id: id ?? this.id,
       onDelete: onDelete ?? this.onDelete,

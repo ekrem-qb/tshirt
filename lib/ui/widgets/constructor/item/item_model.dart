@@ -43,8 +43,8 @@ enum OperationState {
 
 /// 自定义对象
 @immutable
-class StackBoardItem {
-  const StackBoardItem({
+class Item {
+  const Item({
     required this.child,
     this.id,
     this.onDelete,
@@ -68,14 +68,14 @@ class StackBoardItem {
   final bool tapToEdit;
 
   /// 对象拷贝
-  StackBoardItem copyWith({
+  Item copyWith({
     int? id,
     Widget? child,
     Future<bool> Function()? onDelete,
     CaseStyle? caseStyle,
     bool? tapToEdit,
   }) =>
-      StackBoardItem(
+      Item(
         id: id ?? this.id,
         child: child ?? this.child,
         onDelete: onDelete ?? this.onDelete,
@@ -84,10 +84,10 @@ class StackBoardItem {
       );
 
   /// 对象比较
-  bool sameWith(StackBoardItem item) => item.id == id;
+  bool sameWith(Item item) => item.id == id;
 
   @override
-  bool operator ==(Object other) => other is StackBoardItem && id == other.id;
+  bool operator ==(Object other) => other is Item && id == other.id;
 
   @override
   int get hashCode => id.hashCode;

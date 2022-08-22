@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import '../item_model.dart';
 
 /// 画板
-class StackDrawing extends StackBoardItem {
-  const StackDrawing({
+class PaintItem extends Item {
+  const PaintItem({
     this.size = const Size(260, 260),
     Widget background = const SizedBox(width: 260, height: 260),
     super.id,
@@ -20,7 +20,7 @@ class StackDrawing extends StackBoardItem {
   final Size size;
 
   @override
-  StackDrawing copyWith({
+  PaintItem copyWith({
     int? id,
     Widget? child,
     Function(bool)? onEdit,
@@ -29,7 +29,7 @@ class StackDrawing extends StackBoardItem {
     Size? size,
     bool? tapToEdit,
   }) {
-    return StackDrawing(
+    return PaintItem(
       background: child ?? this.child,
       id: id ?? this.id,
       onDelete: onDelete ?? this.onDelete,

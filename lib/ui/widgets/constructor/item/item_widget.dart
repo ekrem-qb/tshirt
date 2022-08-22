@@ -43,8 +43,8 @@ class Config {
 }
 
 /// 操作外壳
-class ItemCase extends StatefulWidget {
-  const ItemCase({
+class ItemWidget extends StatefulWidget {
+  const ItemWidget({
     super.key,
     this.controller,
     required this.child,
@@ -65,9 +65,9 @@ class ItemCase extends StatefulWidget {
   });
 
   @override
-  ItemCaseState createState() => ItemCaseState();
+  ItemWidgetState createState() => ItemWidgetState();
 
-  final ItemCaseController? controller;
+  final ItemController? controller;
 
   /// 子控件
   final Widget child;
@@ -114,7 +114,7 @@ class ItemCase extends StatefulWidget {
   final bool? Function(OperationState)? onOperationStateChanged;
 }
 
-class ItemCaseState extends State<ItemCase> with SafeState<ItemCase> {
+class ItemWidgetState extends State<ItemWidget> with SafeState<ItemWidget> {
   /// 基础参数状态
   late SafeValueNotifier<Config> config;
 
@@ -171,12 +171,12 @@ class ItemCaseState extends State<ItemCase> with SafeState<ItemCase> {
       _recalculateCenter();
     });
     _boardController =
-        context.findAncestorWidgetOfExactType<StackBoard>()?.controller;
-    widget.controller?._itemCaseState = this;
+        context.findAncestorWidgetOfExactType<BoardWidget>()?.controller;
+    widget.controller?._itemState = this;
   }
 
   @override
-  void didUpdateWidget(covariant ItemCase oldWidget) {
+  void didUpdateWidget(covariant ItemWidget oldWidget) {
     if (widget.operationState != null &&
         widget.operationState != oldWidget.operationState) {
       operationState = widget.operationState!;
@@ -663,25 +663,25 @@ class ItemCaseState extends State<ItemCase> with SafeState<ItemCase> {
   }
 }
 
-class ItemCaseController {
-  ItemCaseState? _itemCaseState;
+class ItemController {
+  ItemWidgetState? _itemState;
 
   void resizeCase(Offset scaleOffset) {
-    _itemCaseState?._scaleHandle(
+    _itemState?._scaleHandle(
       scaleOffset / 2,
       cancelEditMode: false,
       keepAspectRatio: false,
     );
-    _itemCaseState?.safeSetState(() => {});
+    _itemState?.safeSetState(() => {});
   }
 
   void setOriginalSize(Size newSize) {
-    _itemCaseState?.originalSize = newSize;
+    _itemState?.originalSize = newSize;
   }
 
   void dispose() {
-    _itemCaseState = null;
+    _itemState = null;
   }
 
-  SafeValueNotifier<Config>? get config => _itemCaseState?.config;
+  SafeValueNotifier<Config>? get config => _itemState?.config;
 }

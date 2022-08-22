@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../resources/images.dart';
+// import '../../../resources/images.dart';
 import '../library/modal_top_sheet.dart';
 import 'board/board_widget.dart';
 import 'item/image/image_choose_widget.dart';
@@ -46,9 +46,22 @@ class ConstructorScreenState extends State<ConstructorScreen> {
         body: Stack(
           alignment: Alignment.center,
           children: [
+            // Positioned(
+            //   width: 671 * 2,
+            //   height: 675 * 2,
+            //   child: Transform.translate(
+            //     offset: const Offset(0, 105 * 2),
+            //     child: const Image(
+            //       image: Images.tshirtFront,
+            //       fit: BoxFit.cover,
+            //     ),
+            //   ),
+            // ),
             Positioned(
+              // width: 297 * 2,
+              // height: 210 * 2,
               child: ClipRect(
-                child: StackBoard(
+                child: BoardWidget(
                   controller: _boardController,
                   caseStyle: const CaseStyle(
                     borderColor: Colors.grey,
@@ -71,7 +84,7 @@ class ConstructorScreenState extends State<ConstructorScreen> {
                     FloatingActionButton(
                         onPressed: () {
                           _boardController.add(
-                            const AdaptiveText(
+                            const TextItem(
                               'Flutter Candies',
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
@@ -87,7 +100,7 @@ class ConstructorScreenState extends State<ConstructorScreen> {
                         );
                         if (result != null) {
                           _boardController.add(
-                            MaskedImage(
+                            ImageItem(
                               result,
                             ),
                           );
@@ -99,7 +112,7 @@ class ConstructorScreenState extends State<ConstructorScreen> {
                     FloatingActionButton(
                         onPressed: () {
                           _boardController.add(
-                            const StackDrawing(
+                            const PaintItem(
                               caseStyle: CaseStyle(
                                 borderColor: Colors.grey,
                                 iconColor: Colors.white,

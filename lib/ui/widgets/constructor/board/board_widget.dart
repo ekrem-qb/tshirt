@@ -14,8 +14,8 @@ import '../item/text/text_model.dart';
 import '../item/text/text_widget.dart';
 
 /// 层叠板
-class StackBoard extends StatefulWidget {
-  const StackBoard({
+class BoardWidget extends StatefulWidget {
+  const BoardWidget({
     super.key,
     this.controller,
     this.background,
@@ -26,7 +26,7 @@ class StackBoard extends StatefulWidget {
   });
 
   @override
-  StackBoardState createState() => StackBoardState();
+  BoardWidgetState createState() => BoardWidgetState();
 
   /// 层叠版控制器
   final StackBoardController? controller;
@@ -40,15 +40,15 @@ class StackBoard extends StatefulWidget {
   final CaseStyle? caseStyle;
 
   /// 自定义类型控件构建器
-  final Widget? Function(StackBoardItem item)? customBuilder;
+  final Widget? Function(Item item)? customBuilder;
 
   /// 点击item移至顶层
   final bool tapItemToMoveToTop;
 }
 
-class StackBoardState extends State<StackBoard> with SafeState<StackBoard> {
+class BoardWidgetState extends State<BoardWidget> with SafeState<BoardWidget> {
   /// 子控件列表
-  late List<StackBoardItem> _children;
+  late List<Item> _children;
 
   int? _focusedItemId;
 
@@ -67,7 +67,7 @@ class StackBoardState extends State<StackBoard> with SafeState<StackBoard> {
   @override
   void initState() {
     super.initState();
-    _children = <StackBoardItem>[];
+    _children = <Item>[];
   }
 
   @override
@@ -77,7 +77,7 @@ class StackBoardState extends State<StackBoard> with SafeState<StackBoard> {
   }
 
   /// 添加一个
-  void _add<T extends StackBoardItem>(StackBoardItem item) {
+  void _add<T extends Item>(Item item) {
     if (_children.contains(item)) throw 'duplicate id';
 
     _children.add(item.copyWith(
@@ -92,7 +92,7 @@ class StackBoardState extends State<StackBoard> with SafeState<StackBoard> {
 
   /// 移除指定id item
   void _remove(int? id) {
-    _children.removeWhere((StackBoardItem b) => b.id == id);
+    _children.removeWhere((Item b) => b.id == id);
     safeSetState(() {});
   }
 
@@ -100,9 +100,8 @@ class StackBoardState extends State<StackBoard> with SafeState<StackBoard> {
   void _moveItemToTop(int? id) {
     if (id == null) return;
 
-    final StackBoardItem item =
-        _children.firstWhere((StackBoardItem i) => i.id == id);
-    _children.removeWhere((StackBoardItem i) => i.id == id);
+    final Item item = _children.firstWhere((Item i) => i.id == id);
+    _children.removeWhere((Item i) => i.id == id);
     _children.add(item);
 
     _unFocus(id);
@@ -127,7 +126,7 @@ class StackBoardState extends State<StackBoard> with SafeState<StackBoard> {
   }
 
   /// 删除动作
-  Future<void> _onDelete(StackBoardItem box) async {
+  Future<void> _onDelete(Item box) async {
     final bool delete = (await box.onDelete?.call()) ?? true;
     if (delete) _remove(box.id);
   }
@@ -138,7 +137,7 @@ class StackBoardState extends State<StackBoard> with SafeState<StackBoard> {
       fit: StackFit.expand,
       children: <Widget>[
         if (widget.background != null) widget.background!,
-        ..._children.map((StackBoardItem box) => _buildItem(box)).toList(),
+        ..._children.map((Item box) => _buildItem(box)).toList(),
         if (widget.enableCenterGuides)
           CenterGuides(
             controller: _centerGuidesController,
@@ -152,8 +151,8 @@ class StackBoardState extends State<StackBoard> with SafeState<StackBoard> {
   }
 
   /// 构建项
-  Widget _buildItem(StackBoardItem item) {
-    Widget child = ItemCase(
+  Widget _buildItem(Item item) {
+    Widget child = ItemWidget(
       key: _getKey(item.id),
       onDelete: () => _onDelete(item),
       onPointerDown: () => _moveItemToTop(item.id),
@@ -169,8 +168,8 @@ class StackBoardState extends State<StackBoard> with SafeState<StackBoard> {
       ),
     );
 
-    if (item is AdaptiveText) {
-      child = AdaptiveTextCase(
+    if (item is TextItem) {
+      child = TextItemWidget(
         key: _getKey(item.id),
         adaptiveText: item,
         onDelete: () => _onDelete(item),
@@ -178,8 +177,8 @@ class StackBoardState extends State<StackBoard> with SafeState<StackBoard> {
         operationState:
             _focusedItemId == item.id ? OperationState.idle : _operationState,
       );
-    } else if (item is StackDrawing) {
-      child = DrawingBoardCase(
+    } else if (item is PaintItem) {
+      child = PaintItemWidget(
         key: _getKey(item.id),
         stackDrawing: item,
         onDelete: () => _onDelete(item),
@@ -187,8 +186,8 @@ class StackBoardState extends State<StackBoard> with SafeState<StackBoard> {
         operationState:
             _focusedItemId == item.id ? OperationState.idle : _operationState,
       );
-    } else if (item is MaskedImage) {
-      child = MaskedImageCase(
+    } else if (item is ImageItem) {
+      child = ImageItemWidget(
         key: _getKey(item.id),
         image: item.image,
         onDelete: () => _onDelete(item),
@@ -198,7 +197,7 @@ class StackBoardState extends State<StackBoard> with SafeState<StackBoard> {
             _focusedItemId == item.id ? OperationState.idle : _operationState,
       );
     } else {
-      child = ItemCase(
+      child = ItemWidget(
         key: _getKey(item.id),
         onDelete: () => _onDelete(item),
         onPointerDown: () => _moveItemToTop(item.id),
@@ -226,7 +225,7 @@ class StackBoardState extends State<StackBoard> with SafeState<StackBoard> {
 
 /// 控制器
 class StackBoardController {
-  StackBoardState? _stackBoardState;
+  BoardWidgetState? _stackBoardState;
 
   /// 检查是否加载
   void _done() {
@@ -234,7 +233,7 @@ class StackBoardController {
   }
 
   /// 添加一个
-  void add<T extends StackBoardItem>(T item) {
+  void add<T extends Item>(T item) {
     _done();
     _stackBoardState?._add<T>(item);
   }

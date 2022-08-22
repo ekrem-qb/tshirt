@@ -13,8 +13,8 @@ import '../item_widget.dart';
 import 'image_choose_widget.dart';
 
 /// 自适应文本
-class MaskedImage extends StackBoardItem with ChangeNotifier {
-  MaskedImage(
+class ImageItem extends Item with ChangeNotifier {
+  ImageItem(
     this._image, {
     super.id,
     super.onDelete,
@@ -26,7 +26,7 @@ class MaskedImage extends StackBoardItem with ChangeNotifier {
         );
 
   @override
-  MaskedImage copyWith({
+  ImageItem copyWith({
     ImageProvider? image,
     String? mask,
     int? id,
@@ -36,7 +36,7 @@ class MaskedImage extends StackBoardItem with ChangeNotifier {
     CaseStyle? caseStyle,
     bool? tapToEdit,
   }) {
-    return MaskedImage(
+    return ImageItem(
       image ?? this.image,
       id: id ?? this.id,
       onDelete: onDelete ?? this.onDelete,
@@ -49,7 +49,7 @@ class MaskedImage extends StackBoardItem with ChangeNotifier {
   static const double sizeChangeTreshold = 1.5;
 
   Size caseSize = defaultSize;
-  final ItemCaseController caseController = ItemCaseController();
+  final ItemController itemController = ItemController();
 
   Matrix4 _flipMatrix = Matrix4.identity();
   Matrix4 get flipMatrix => _flipMatrix;
@@ -99,10 +99,10 @@ class MaskedImage extends StackBoardItem with ChangeNotifier {
       (imageInfo.image.height / 4) + (caseStyle?.iconSize ?? 24),
     );
     final offset = ui.Offset(
-        imageSize!.width - caseController.config!.value.size!.width,
-        imageSize!.height - caseController.config!.value.size!.height);
-    caseController.setOriginalSize(imageSize!);
-    caseController.resizeCase(offset);
+        imageSize!.width - itemController.config!.value.size!.width,
+        imageSize!.height - itemController.config!.value.size!.height);
+    itemController.setOriginalSize(imageSize!);
+    itemController.resizeCase(offset);
     notifyListeners();
   }
 

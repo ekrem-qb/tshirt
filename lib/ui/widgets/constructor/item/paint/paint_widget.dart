@@ -7,8 +7,8 @@ import '../item_widget.dart';
 import 'paint_model.dart';
 
 /// 画板外壳
-class DrawingBoardCase extends StatefulWidget {
-  const DrawingBoardCase({
+class PaintItemWidget extends StatefulWidget {
+  const PaintItemWidget({
     super.key,
     required this.stackDrawing,
     this.onDelete,
@@ -17,10 +17,10 @@ class DrawingBoardCase extends StatefulWidget {
   });
 
   @override
-  DrawingBoardCaseState createState() => DrawingBoardCaseState();
+  PaintItemWidgetState createState() => PaintItemWidgetState();
 
   /// 画板配置对象
-  final StackDrawing stackDrawing;
+  final PaintItem stackDrawing;
 
   /// 移除拦截
   final void Function()? onDelete;
@@ -32,8 +32,8 @@ class DrawingBoardCase extends StatefulWidget {
   final OperationState? operationState;
 }
 
-class DrawingBoardCaseState extends State<DrawingBoardCase>
-    with SafeState<DrawingBoardCase> {
+class PaintItemWidgetState extends State<PaintItemWidget>
+    with SafeState<PaintItemWidget> {
   /// 绘制控制器
   late DrawingController _drawingController;
 
@@ -61,7 +61,7 @@ class DrawingBoardCaseState extends State<DrawingBoardCase>
   }
 
   @override
-  void didUpdateWidget(covariant DrawingBoardCase oldWidget) {
+  void didUpdateWidget(covariant PaintItemWidget oldWidget) {
     if (widget.operationState != oldWidget.operationState) {
       safeSetState(() => _operationState = widget.operationState);
     }
@@ -92,7 +92,7 @@ class DrawingBoardCaseState extends State<DrawingBoardCase>
 
   @override
   Widget build(BuildContext context) {
-    return ItemCase(
+    return ItemWidget(
       isCentered: false,
       isEditable: true,
       onPointerDown: widget.onPointerDown,

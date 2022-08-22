@@ -9,8 +9,8 @@ import 'text_model.dart';
 const TextStyle _defaultStyle = TextStyle(fontSize: 20);
 
 /// 自适应文本外壳
-class AdaptiveTextCase extends StatefulWidget {
-  const AdaptiveTextCase({
+class TextItemWidget extends StatefulWidget {
+  const TextItemWidget({
     super.key,
     required this.adaptiveText,
     this.onDelete,
@@ -19,10 +19,10 @@ class AdaptiveTextCase extends StatefulWidget {
   });
 
   @override
-  AdaptiveTextCaseState createState() => AdaptiveTextCaseState();
+  TextItemWidgetState createState() => TextItemWidgetState();
 
   /// 自适应文本对象
-  final AdaptiveText adaptiveText;
+  final TextItem adaptiveText;
 
   /// 移除拦截
   final void Function()? onDelete;
@@ -34,8 +34,8 @@ class AdaptiveTextCase extends StatefulWidget {
   final OperationState? operationState;
 }
 
-class AdaptiveTextCaseState extends State<AdaptiveTextCase>
-    with SafeState<AdaptiveTextCase> {
+class TextItemWidgetState extends State<TextItemWidget>
+    with SafeState<TextItemWidget> {
   /// 是否正在编辑
   bool _isEditing = false;
 
@@ -46,7 +46,7 @@ class AdaptiveTextCaseState extends State<AdaptiveTextCase>
 
   Size? oldSize;
 
-  final ItemCaseController _itemCaseController = ItemCaseController();
+  final ItemController _itemController = ItemController();
 
   /// 文本样式
   TextStyle get _style => widget.adaptiveText.style ?? _defaultStyle;
@@ -73,7 +73,7 @@ class AdaptiveTextCaseState extends State<AdaptiveTextCase>
 
     oldSize = newSize;
 
-    _itemCaseController.resizeCase(scaleOffset);
+    _itemController.resizeCase(scaleOffset);
 
     return scaleOffset;
   }
@@ -86,8 +86,8 @@ class AdaptiveTextCaseState extends State<AdaptiveTextCase>
 
   @override
   Widget build(BuildContext context) {
-    return ItemCase(
-      controller: _itemCaseController,
+    return ItemWidget(
+      controller: _itemController,
       isCentered: false,
       isEditable: true,
       onPointerDown: widget.onPointerDown,

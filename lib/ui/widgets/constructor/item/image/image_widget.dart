@@ -5,8 +5,8 @@ import '../item_model.dart';
 import '../item_widget.dart';
 import 'image_model.dart';
 
-class MaskedImageCase extends StatelessWidget {
-  const MaskedImageCase({
+class ImageItemWidget extends StatelessWidget {
+  const ImageItemWidget({
     super.key,
     required this.image,
     this.onDelete,
@@ -29,7 +29,7 @@ class MaskedImageCase extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (context) {
-        return MaskedImage(image)..calculateImageSize();
+        return ImageItem(image)..calculateImageSize();
       },
       child: _CaseWidget(
         onPointerDown: onPointerDown,
@@ -59,14 +59,14 @@ class _CaseWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    MaskedImage? maskedImageModel;
-    final maskShader = context.select((MaskedImage model) {
+    ImageItem? maskedImageModel;
+    final maskShader = context.select((ImageItem model) {
       maskedImageModel ??= model;
       return model.maskShader;
     });
 
-    return ItemCase(
-      controller: maskedImageModel!.caseController,
+    return ItemWidget(
+      controller: maskedImageModel!.itemController,
       isEditable: true,
       onPointerDown: onPointerDown,
       tapToEdit: maskedImageModel!.tapToEdit,
@@ -95,7 +95,7 @@ class _ImageWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     // Doesn't work, maybe because of Matrix4 comparison
     // final flipMatrix = context.select((MaskedImage model) => model.flipMatrix);
-    final MaskedImage maskedImageModel = context.watch<MaskedImage>();
+    final ImageItem maskedImageModel = context.watch<ImageItem>();
 
     if (maskedImageModel.imageSize != null) {
       return Transform(
@@ -111,8 +111,8 @@ class _ImageWidget extends StatelessWidget {
       );
     } else {
       return SizedBox(
-        width: MaskedImage.defaultSize.width,
-        height: MaskedImage.defaultSize.height,
+        width: ImageItem.defaultSize.width,
+        height: ImageItem.defaultSize.height,
         child: const Center(
           child: CircularProgressIndicator(),
         ),
@@ -124,7 +124,7 @@ class _ImageWidget extends StatelessWidget {
 class _EditToolsWidget extends StatelessWidget {
   const _EditToolsWidget(this.maskedImageModel);
 
-  final MaskedImage maskedImageModel;
+  final ImageItem maskedImageModel;
 
   @override
   Widget build(BuildContext context) {
