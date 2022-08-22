@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'ui/widgets/constructor.dart';
+import 'ui/widgets/constructor/constructor_widget.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();

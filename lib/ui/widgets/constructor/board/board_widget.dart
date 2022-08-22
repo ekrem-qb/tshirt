@@ -3,17 +3,15 @@ library stack_board;
 import 'package:flutter/material.dart';
 import 'package:flutter_drawing_board/flutter_drawing_board.dart';
 
-import 'case_group/adaptive_text_case.dart';
-import 'case_group/drawing_board_case.dart';
-import 'case_group/item_case.dart';
-import 'case_group/masked_image_case.dart';
-import 'helper/case_style.dart';
-import 'helper/center_guides.dart';
-import 'helper/operat_state.dart';
-import 'item_group/adaptive_text.dart';
-import 'item_group/masked_image.dart';
-import 'item_group/stack_board_item.dart';
-import 'item_group/stack_drawing.dart';
+import '../../library/center_guides.dart';
+import '../item/image/image_model.dart';
+import '../item/image/image_widget.dart';
+import '../item/item_model.dart';
+import '../item/item_widget.dart';
+import '../item/paint/paint_model.dart';
+import '../item/paint/paint_widget.dart';
+import '../item/text/text_model.dart';
+import '../item/text/text_widget.dart';
 
 /// 层叠板
 class StackBoard extends StatefulWidget {

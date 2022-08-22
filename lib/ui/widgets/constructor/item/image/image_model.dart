@@ -5,12 +5,12 @@ import 'dart:ui' as ui;
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import '../../../../ui/widgets/image_choose.dart';
-import '../../../image_provider_extension/image_provider_extension.dart';
-import '../../../modal_top_sheet/modal_top_sheet.dart';
-import '../case_group/item_case.dart';
-import '../helper/case_style.dart';
-import 'stack_board_item.dart';
+
+import '../../../../../providers/library/image_provider_extension.dart';
+import '../../../library/modal_top_sheet.dart';
+import '../item_model.dart';
+import '../item_widget.dart';
+import 'image_choose_widget.dart';
 
 /// 自适应文本
 class MaskedImage extends StackBoardItem with ChangeNotifier {

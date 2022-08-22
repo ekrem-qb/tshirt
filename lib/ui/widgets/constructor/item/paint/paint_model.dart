@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../helper/case_style.dart';
-import 'stack_board_item.dart';
+import '../item_model.dart';
 
 /// 画板
 class StackDrawing extends StackBoardItem {

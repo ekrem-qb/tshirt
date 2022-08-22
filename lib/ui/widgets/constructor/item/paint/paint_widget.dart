@@ -2,9 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_drawing_board/flutter_drawing_board.dart';
 
-import '../helper/operat_state.dart';
-import '../item_group/stack_drawing.dart';
-import 'item_case.dart';
+import '../item_model.dart';
+import '../item_widget.dart';
+import 'paint_model.dart';
 
 /// 画板外壳
 class DrawingBoardCase extends StatefulWidget {

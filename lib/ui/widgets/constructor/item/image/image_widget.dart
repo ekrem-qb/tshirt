@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../stack_board.dart';
+import '../item_model.dart';
+import '../item_widget.dart';
+import 'image_model.dart';
 
 class MaskedImageCase extends StatelessWidget {
   const MaskedImageCase({

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_drawing_board/flutter_drawing_board.dart';
 
-import '../helper/operat_state.dart';
-import '../item_group/adaptive_text.dart';
-import 'item_case.dart';
+import '../item_model.dart';
+import '../item_widget.dart';
+import 'text_model.dart';
 
 /// 默认文本样式
 const TextStyle _defaultStyle = TextStyle(fontSize: 20);

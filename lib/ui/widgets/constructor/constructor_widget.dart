@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 
-import '../../library/modal_top_sheet/modal_top_sheet.dart';
-import '../../library/stack_board/stack_board.dart';
-import '../../resources/images.dart';
-import 'image_choose.dart';
+import '../../../resources/images.dart';
+import '../library/modal_top_sheet.dart';
+import 'board/board_widget.dart';
+import 'item/image/image_choose_widget.dart';
+import 'item/image/image_model.dart';
+import 'item/item_model.dart';
+import 'item/paint/paint_model.dart';
+import 'item/text/text_model.dart';
 
 class ConstructorScreen extends StatefulWidget {
   const ConstructorScreen({super.key});
@@ -43,19 +47,6 @@ class ConstructorScreenState extends State<ConstructorScreen> {
           alignment: Alignment.center,
           children: [
             Positioned(
-              width: 671 * 2,
-              height: 675 * 2,
-              child: Transform.translate(
-                offset: const Offset(0, 105 * 2),
-                child: const Image(
-                  image: Images.tshirtFront,
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-            Positioned(
-              width: 297 * 2,
-              height: 210 * 2,
               child: ClipRect(
                 child: StackBoard(
                   controller: _boardController,

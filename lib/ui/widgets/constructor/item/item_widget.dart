@@ -3,10 +3,9 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_drawing_board/flutter_drawing_board.dart';
 
-import '../../../ffloat/ffloat.dart';
-import '../board.dart';
-import '../helper/case_style.dart';
-import '../helper/operat_state.dart';
+import '../../library/ffloat.dart';
+import '../board/board_widget.dart';
+import 'item_model.dart';
 
 /// 配置项
 class Config {

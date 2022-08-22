@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../helper/case_style.dart';
-import 'stack_board_item.dart';
+import '../item_model.dart';
 
 /// 自适应文本
 class AdaptiveText extends StackBoardItem {
