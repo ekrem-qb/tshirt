@@ -24,30 +24,3 @@ void _pickupImage(BuildContext context) async {
     });
   }
 }
-
-Widget maskChooseWidget(context) {
-  return Center(
-    child: ElevatedButton.icon(
-      onPressed: () => _pickSvgString(context),
-      icon: const Icon(Icons.file_open_rounded),
-      label: const Text('File'),
-    ),
-  );
-}
-
-void _pickSvgString(BuildContext context) async {
-  final result = await FilePicker.platform.pickFiles(
-    type: FileType.custom,
-    allowedExtensions: <String>['svg'],
-  );
-  late final String? maskSvgString;
-  if (result != null) {
-    final File file = File(result.files.single.path!);
-    maskSvgString = await file.readAsString();
-  } else {
-    maskSvgString = null;
-  }
-  WidgetsBinding.instance.addPostFrameCallback((_) {
-    Navigator.pop(context, maskSvgString);
-  });
-}

@@ -1,10 +1,13 @@
+import 'dart:io';
 import 'dart:math';
 import 'dart:ui' as ui;
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../../../../ui/widgets/image_choose.dart';
 import '../../../image_provider_extension/image_provider_extension.dart';
+import '../../../modal_top_sheet/modal_top_sheet.dart';
 import '../case_group/item_case.dart';
 import '../helper/case_style.dart';
 import 'stack_board_item.dart';
@@ -148,17 +151,43 @@ class MaskedImage extends StackBoardItem with ChangeNotifier {
   }
 
   void chooseMask(BuildContext context) async {
-    final result = await showModalBottomSheet<String?>(
+    await showModalTopSheet(
       context: context,
-      builder: maskChooseWidget,
+      child: Center(
+        child: Wrap(
+          spacing: 8,
+          children: [
+            ElevatedButton.icon(
+              onPressed: _pickSvgString,
+              icon: const Icon(Icons.file_open_rounded),
+              label: const Text('File'),
+            ),
+            ElevatedButton.icon(
+              onPressed: () => maskSvgString = null,
+              icon: const Icon(Icons.not_interested_rounded),
+              label: const Text('None'),
+            ),
+          ],
+        ),
+      ),
     );
-    maskSvgString = result;
+  }
+
+  void _pickSvgString() async {
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: <String>['svg'],
+    );
+    if (result != null) {
+      final file = File(result.files.single.path!);
+      maskSvgString = await file.readAsString();
+    }
   }
 
   void chooseImage(BuildContext context) async {
-    final result = await showModalBottomSheet<ImageProvider>(
+    final result = await showModalTopSheet<ImageProvider>(
       context: context,
-      builder: imageChooseWidget,
+      child: imageChooseWidget(context),
     );
     if (result != null) {
       image = result;
