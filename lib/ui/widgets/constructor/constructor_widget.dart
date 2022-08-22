@@ -84,10 +84,7 @@ class ConstructorScreenState extends State<ConstructorScreen> {
                     FloatingActionButton(
                         onPressed: () {
                           _boardController.add(
-                            const TextItem(
-                              'Flutter Candies',
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
+                            TextItem('Flutter Candies'),
                           );
                         },
                         child: const Icon(Icons.text_fields_rounded)),
@@ -100,9 +97,7 @@ class ConstructorScreenState extends State<ConstructorScreen> {
                         );
                         if (result != null) {
                           _boardController.add(
-                            ImageItem(
-                              result,
-                            ),
+                            ImageItem(result),
                           );
                         }
                       },

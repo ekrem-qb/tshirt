@@ -171,9 +171,10 @@ class BoardWidgetState extends State<BoardWidget> with SafeState<BoardWidget> {
     if (item is TextItem) {
       child = TextItemWidget(
         key: _getKey(item.id),
-        adaptiveText: item,
+        text: item.text,
         onDelete: () => _onDelete(item),
         onPointerDown: () => _moveItemToTop(item.id),
+        caseStyle: item.caseStyle,
         operationState:
             _focusedItemId == item.id ? OperationState.idle : _operationState,
       );

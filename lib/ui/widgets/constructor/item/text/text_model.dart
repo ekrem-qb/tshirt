@@ -1,20 +1,11 @@
 import 'package:flutter/material.dart';
 
 import '../item_model.dart';
+import '../item_widget.dart';
 
-/// 自适应文本
-class TextItem extends Item {
-  const TextItem(
-    this.data, {
-    this.style,
-    this.textAlign,
-    this.textDirection,
-    this.locale,
-    this.softWrap,
-    this.overflow,
-    this.textScaleFactor,
-    this.maxLines,
-    this.semanticsLabel,
+class TextItem extends Item with ChangeNotifier {
+  TextItem(
+    this.text, {
     super.id,
     super.onDelete,
     super.caseStyle,
@@ -24,70 +15,102 @@ class TextItem extends Item {
           tapToEdit: tapToEdit ?? false,
         );
 
-  /// 文本内容
-  final String data;
-
-  /// 文本样式
-  final TextStyle? style;
-
-  /// 文本对齐方式
-  final TextAlign? textAlign;
-
-  /// textDirection
-  final TextDirection? textDirection;
-
-  /// locale
-  final Locale? locale;
-
-  /// softWrap
-  final bool? softWrap;
-
-  /// overflow
-  final TextOverflow? overflow;
-
-  /// textScaleFactor
-  final double? textScaleFactor;
-
-  /// maxLines
-  final int? maxLines;
-
-  /// semanticsLabel
-  final String? semanticsLabel;
-
   @override
   TextItem copyWith({
-    String? data,
+    String? text,
     int? id,
     Widget? child,
-    Function(bool)? onEdit,
     Future<bool> Function()? onDelete,
-    TextStyle? style,
-    TextAlign? textAlign,
-    TextDirection? textDirection,
-    Locale? locale,
-    bool? softWrap,
-    TextOverflow? overflow,
-    double? textScaleFactor,
-    int? maxLines,
-    String? semanticsLabel,
     CaseStyle? caseStyle,
     bool? tapToEdit,
   }) {
     return TextItem(
-      data ?? this.data,
+      text ?? this.text,
       id: id ?? this.id,
       onDelete: onDelete ?? this.onDelete,
-      style: style ?? this.style,
-      textAlign: textAlign ?? this.textAlign,
-      textDirection: textDirection ?? this.textDirection,
-      locale: locale ?? this.locale,
-      softWrap: softWrap ?? this.softWrap,
-      overflow: overflow ?? this.overflow,
-      textScaleFactor: textScaleFactor ?? this.textScaleFactor,
-      maxLines: maxLines ?? this.maxLines,
-      semanticsLabel: semanticsLabel ?? this.semanticsLabel,
       caseStyle: caseStyle ?? this.caseStyle,
       tapToEdit: tapToEdit ?? this.tapToEdit,
     );
+  }
+
+  String text;
+
+  TextStyle style = const TextStyle();
+
+  TextAlign textAlign = TextAlign.center;
+
+  bool _isEditing = false;
+
+  bool get isEditing => _isEditing;
+
+  set isEditing(bool newIsEditing) {
+    if (_isEditing != newIsEditing) {
+      _isEditing = newIsEditing;
+      notifyListeners();
+    }
+  }
+
+  final FocusNode focusNode = FocusNode();
+
+  Size? oldSize;
+
+  final ItemController itemController = ItemController();
+
+  Matrix4 _flipMatrix = Matrix4.identity();
+
+  Matrix4 get flipMatrix => _flipMatrix;
+
+  set flipMatrix(Matrix4 flipMatrix) {
+    _flipMatrix = flipMatrix;
+    notifyListeners();
+  }
+
+  bool? onOperationStateChanged(OperationState newOperationState) {
+    if (newOperationState != OperationState.editing && isEditing) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => isEditing = false);
+    } else if (newOperationState == OperationState.editing && !isEditing) {
+      isEditing = true;
+      WidgetsBinding.instance
+          .addPostFrameCallback((_) => focusNode.requestFocus());
+    }
+
+    return true;
+  }
+
+  void onTextChanged(String newText) {
+    text = newText;
+    calculateTextOffset();
+    notifyListeners();
+  }
+
+  Size calculateTextSize() {
+    final TextPainter textPainter = TextPainter(
+      text: TextSpan(text: text, style: style),
+      textAlign: textAlign,
+      textDirection: TextDirection.ltr,
+      maxLines: null,
+    )..layout(minWidth: 0, maxWidth: double.infinity);
+    return textPainter.size;
+  }
+
+  Offset calculateTextOffset() {
+    final Size newSize = calculateTextSize();
+
+    final Offset scaleOffset = Offset(
+        newSize.width - (oldSize?.width ?? newSize.width),
+        newSize.height - (oldSize?.height ?? newSize.height));
+
+    oldSize = newSize;
+
+    itemController.resizeCase(scaleOffset);
+
+    return scaleOffset;
+  }
+
+  @override
+  void dispose() {
+    focusNode.dispose();
+    itemController.dispose();
+    super.dispose();
   }
 }

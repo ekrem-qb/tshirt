@@ -12,7 +12,6 @@ import '../item_model.dart';
 import '../item_widget.dart';
 import 'image_choose_widget.dart';
 
-/// 自适应文本
 class ImageItem extends Item with ChangeNotifier {
   ImageItem(
     this._image, {
@@ -28,10 +27,8 @@ class ImageItem extends Item with ChangeNotifier {
   @override
   ImageItem copyWith({
     ImageProvider? image,
-    String? mask,
     int? id,
     Widget? child,
-    Function(bool)? onEdit,
     Future<bool> Function()? onDelete,
     CaseStyle? caseStyle,
     bool? tapToEdit,
@@ -145,11 +142,6 @@ class ImageItem extends Item with ChangeNotifier {
     return true;
   }
 
-  bool? onFlipped(Matrix4 newFlipMatrix) {
-    flipMatrix = Matrix4.fromFloat64List(newFlipMatrix.storage);
-    return true;
-  }
-
   void chooseMask(BuildContext context) async {
     await showModalTopSheet(
       context: context,
@@ -240,5 +232,11 @@ class ImageItem extends Item with ChangeNotifier {
       TileMode.clamp,
       matrix.storage,
     );
+  }
+
+  @override
+  void dispose() {
+    itemController.dispose();
+    super.dispose();
   }
 }

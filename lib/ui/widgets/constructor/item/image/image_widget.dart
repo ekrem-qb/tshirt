@@ -16,24 +16,18 @@ class ImageItemWidget extends StatelessWidget {
   });
 
   final ImageProvider image;
-
   final void Function()? onDelete;
-
   final void Function()? onPointerDown;
-
   final OperationState? operationState;
-
   final CaseStyle? caseStyle;
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) {
-        return ImageItem(image)..calculateImageSize();
-      },
-      child: _CaseWidget(
-        onPointerDown: onPointerDown,
+      create: (_) => ImageItem(image)..calculateImageSize(),
+      child: _ItemWidget(
         image: image,
+        onPointerDown: onPointerDown,
         onDelete: onDelete,
         operationState: operationState,
         caseStyle: caseStyle,
@@ -42,10 +36,10 @@ class ImageItemWidget extends StatelessWidget {
   }
 }
 
-class _CaseWidget extends StatelessWidget {
-  const _CaseWidget({
-    required this.onPointerDown,
+class _ItemWidget extends StatelessWidget {
+  const _ItemWidget({
     required this.image,
+    required this.onPointerDown,
     required this.onDelete,
     required this.operationState,
     this.caseStyle,
@@ -59,24 +53,27 @@ class _CaseWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    ImageItem? maskedImageModel;
+    ImageItem? imageModel;
     final maskShader = context.select((ImageItem model) {
-      maskedImageModel ??= model;
+      imageModel ??= model;
       return model.maskShader;
     });
 
     return ItemWidget(
-      controller: maskedImageModel!.itemController,
+      controller: imageModel!.itemController,
       isEditable: true,
       onPointerDown: onPointerDown,
-      tapToEdit: maskedImageModel!.tapToEdit,
+      tapToEdit: imageModel!.tapToEdit,
       onDelete: onDelete,
-      onSizeChanged: maskedImageModel!.onSizeChanged,
-      onResizeDone: maskedImageModel!.onResizeDone,
-      onFlipped: maskedImageModel!.onFlipped,
+      onSizeChanged: imageModel!.onSizeChanged,
+      onResizeDone: imageModel!.onResizeDone,
+      onFlipped: (newFlipMatrix) {
+        imageModel!.flipMatrix = newFlipMatrix;
+        return true;
+      },
       operationState: operationState,
       caseStyle: caseStyle,
-      editTools: _EditToolsWidget(maskedImageModel!),
+      editTools: _EditToolsWidget(imageModel!),
       child: maskShader != null
           ? ShaderMask(
               blendMode: BlendMode.dstIn,
@@ -94,17 +91,17 @@ class _ImageWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Doesn't work, maybe because of Matrix4 comparison
-    // final flipMatrix = context.select((MaskedImage model) => model.flipMatrix);
-    final ImageItem maskedImageModel = context.watch<ImageItem>();
+    // final flipMatrix = context.select((ImageItem model) => model.flipMatrix);
+    final ImageItem imageModel = context.watch<ImageItem>();
 
-    if (maskedImageModel.imageSize != null) {
+    if (imageModel.imageSize != null) {
       return Transform(
-        transform: maskedImageModel.flipMatrix,
+        transform: imageModel.flipMatrix,
         alignment: Alignment.center,
         child: Image(
-          image: maskedImageModel.image,
-          width: maskedImageModel.imageSize!.width,
-          height: maskedImageModel.imageSize!.height,
+          image: imageModel.image,
+          width: imageModel.imageSize!.width,
+          height: imageModel.imageSize!.height,
           fit: BoxFit.contain,
           filterQuality: FilterQuality.medium,
         ),
@@ -122,20 +119,20 @@ class _ImageWidget extends StatelessWidget {
 }
 
 class _EditToolsWidget extends StatelessWidget {
-  const _EditToolsWidget(this.maskedImageModel);
+  const _EditToolsWidget(this.imageModel);
 
-  final ImageItem maskedImageModel;
+  final ImageItem imageModel;
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
         ElevatedButton(
-          onPressed: () => maskedImageModel.chooseImage(context),
+          onPressed: () => imageModel.chooseImage(context),
           child: const Text('Image'),
         ),
         ElevatedButton(
-          onPressed: () => maskedImageModel.chooseMask(context),
+          onPressed: () => imageModel.chooseMask(context),
           child: const Text('Mask'),
         ),
       ],
