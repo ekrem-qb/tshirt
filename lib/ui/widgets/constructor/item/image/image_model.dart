@@ -145,9 +145,10 @@ class ImageItem extends Item with ChangeNotifier {
   void chooseMask(BuildContext context) async {
     await showModalTopSheet(
       context: context,
-      child: Center(
-        child: Wrap(
-          spacing: 8,
+      child: Padding(
+        padding: const EdgeInsets.all(64),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             ElevatedButton.icon(
               onPressed: _pickSvgString,

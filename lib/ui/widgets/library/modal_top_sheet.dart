@@ -26,14 +26,10 @@ Future<T?> showModalTopSheet<T>({
         return Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            SizedBox(
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height / 4,
-              child: Material(
-                elevation: 8,
-                type: MaterialType.card,
-                child: child,
-              ),
+            Material(
+              elevation: 8,
+              type: MaterialType.card,
+              child: child,
             ),
           ],
         );
@@ -44,7 +40,7 @@ Future<T?> showModalTopSheet<T>({
             parent: animation,
             curve: Curves.easeOutCubic,
           ).drive(Tween<Offset>(
-            begin: Offset(0, -1.0),
+            begin: const Offset(0, -1.0),
             end: Offset.zero,
           )),
           child: child,

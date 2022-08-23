@@ -4,11 +4,17 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 Widget imageChooseWidget(context) {
-  return Center(
-    child: ElevatedButton.icon(
-      onPressed: () => _pickupImage(context),
-      icon: const Icon(Icons.file_open_rounded),
-      label: const Text('File'),
+  return Padding(
+    padding: const EdgeInsets.all(64),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        ElevatedButton.icon(
+          onPressed: () => _pickupImage(context),
+          icon: const Icon(Icons.file_open_rounded),
+          label: const Text('File'),
+        ),
+      ],
     ),
   );
 }

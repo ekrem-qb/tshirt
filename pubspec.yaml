@@ -30,6 +30,7 @@ dependencies:
   camera: ^0.10.0
   camera_windows: ^0.1.0+4
   file_picker: ^5.0.1
+  flex_color_picker: ^2.5.0
   flutter:
     sdk: flutter
   flutter_drawing_board: ^0.2.7
