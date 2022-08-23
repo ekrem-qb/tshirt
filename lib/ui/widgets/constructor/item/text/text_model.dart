@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../item_model.dart';
 import '../item_widget.dart';
@@ -35,7 +36,9 @@ class TextItem extends Item with ChangeNotifier {
 
   String text;
 
-  TextStyle _style = const TextStyle();
+  String fontFamily = 'Roboto';
+
+  TextStyle _style = GoogleFonts.roboto();
 
   TextStyle get style => _style;
 

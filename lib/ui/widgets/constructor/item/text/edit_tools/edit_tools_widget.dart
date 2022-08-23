@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../../../../library/modal_top_sheet.dart';
 import '../text_model.dart';
 import 'edit_tools_model.dart';
+import 'font_picker/font_picker_widget.dart';
 
 class TextEditToolsWidget extends StatelessWidget {
   const TextEditToolsWidget({
@@ -20,15 +21,37 @@ class TextEditToolsWidget extends StatelessWidget {
       create: (_) => TextEditTools(textModel),
       child: Column(
         children: [
-          _ColorPickWidget(textModel),
+          Row(
+            children: [
+              _FontFamilyPickWidget(textModel),
+              _ColorPickWidget(textModel),
+            ],
+          ),
           _FontStyleWidget(textModel),
-          // OutlinedButton(
-          //   onPressed: () =>
-          //       textModel.style = textModel.style.copyWith(color: Colors.blue),
-          //   child: const Icon(Icons.format_color_fill_rounded),
-          // ),
         ],
       ),
+    );
+  }
+}
+
+class _FontFamilyPickWidget extends StatelessWidget {
+  const _FontFamilyPickWidget(this.textModel);
+
+  final TextItem textModel;
+
+  @override
+  Widget build(BuildContext context) {
+    return FloatingActionButton.small(
+      onPressed: () {
+        showModalTopSheet(
+          context: context,
+          child: FontPickerWidget(
+            textModel: textModel,
+            currentFont: textModel.fontFamily,
+          ),
+        );
+      },
+      child: const Icon(Icons.title_rounded),
     );
   }
 }
@@ -41,10 +64,6 @@ class _ColorPickWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton.small(
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(8)),
-      ),
-      elevation: 2,
       onPressed: () {
         showModalTopSheet(
           context: context,
