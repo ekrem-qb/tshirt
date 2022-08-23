@@ -630,7 +630,7 @@ class _FFloat {
 }
 
 class FFloatContent extends StatefulWidget {
-  static const Color defaultColor = Color(0x7F000000);
+  static const Color defaultColor = Colors.transparent;
 
   FloatBuilder? builder;
   Size anchorSize;

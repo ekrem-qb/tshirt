@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../item_model.dart';
 import '../item_widget.dart';
+import 'edit_tools/edit_tools_widget.dart';
 import 'text_model.dart';
 
 class TextItemWidget extends StatelessWidget {
@@ -69,6 +70,7 @@ class _ItemWidget extends StatelessWidget {
         textModel.flipMatrix = newFlipMatrix;
         return true;
       },
+      editTools: TextEditToolsWidget(textModel: textModel),
       child: const _TextWidget(),
     );
   }

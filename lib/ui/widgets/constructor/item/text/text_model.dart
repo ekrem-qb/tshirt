@@ -35,7 +35,14 @@ class TextItem extends Item with ChangeNotifier {
 
   String text;
 
-  TextStyle style = const TextStyle();
+  TextStyle _style = const TextStyle();
+
+  TextStyle get style => _style;
+
+  set style(TextStyle style) {
+    _style = style;
+    notifyListeners();
+  }
 
   TextAlign textAlign = TextAlign.center;
 
