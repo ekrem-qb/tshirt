@@ -9,7 +9,6 @@ class PaintItem extends Item {
     Widget background = const SizedBox(width: 260, height: 260),
     super.id,
     super.onDelete,
-    super.caseStyle,
     bool? tapToEdit,
   }) : super(
           child: background,
@@ -25,7 +24,6 @@ class PaintItem extends Item {
     Widget? child,
     Function(bool)? onEdit,
     Future<bool> Function()? onDelete,
-    CaseStyle? caseStyle,
     Size? size,
     bool? tapToEdit,
   }) {
@@ -33,7 +31,6 @@ class PaintItem extends Item {
       background: child ?? this.child,
       id: id ?? this.id,
       onDelete: onDelete ?? this.onDelete,
-      caseStyle: caseStyle ?? this.caseStyle,
       size: size ?? this.size,
       tapToEdit: tapToEdit ?? this.tapToEdit,
     );

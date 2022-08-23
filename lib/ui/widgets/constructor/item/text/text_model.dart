@@ -9,7 +9,6 @@ class TextItem extends Item with ChangeNotifier {
     this.text, {
     super.id,
     super.onDelete,
-    super.caseStyle,
     bool? tapToEdit,
   }) : super(
           child: const SizedBox.shrink(),
@@ -22,14 +21,12 @@ class TextItem extends Item with ChangeNotifier {
     int? id,
     Widget? child,
     Future<bool> Function()? onDelete,
-    CaseStyle? caseStyle,
     bool? tapToEdit,
   }) {
     return TextItem(
       text ?? this.text,
       id: id ?? this.id,
       onDelete: onDelete ?? this.onDelete,
-      caseStyle: caseStyle ?? this.caseStyle,
       tapToEdit: tapToEdit ?? this.tapToEdit,
     );
   }

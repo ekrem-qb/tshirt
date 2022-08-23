@@ -12,14 +12,12 @@ class ImageItemWidget extends StatelessWidget {
     this.onDelete,
     this.onPointerDown,
     this.operationState,
-    this.caseStyle,
   });
 
   final ImageProvider image;
   final void Function()? onDelete;
   final void Function()? onPointerDown;
   final OperationState? operationState;
-  final CaseStyle? caseStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +28,6 @@ class ImageItemWidget extends StatelessWidget {
         onPointerDown: onPointerDown,
         onDelete: onDelete,
         operationState: operationState,
-        caseStyle: caseStyle,
       ),
     );
   }
@@ -42,14 +39,12 @@ class _ItemWidget extends StatelessWidget {
     required this.onPointerDown,
     required this.onDelete,
     required this.operationState,
-    this.caseStyle,
   });
 
   final void Function()? onPointerDown;
   final ImageProvider image;
   final void Function()? onDelete;
   final OperationState? operationState;
-  final CaseStyle? caseStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +67,6 @@ class _ItemWidget extends StatelessWidget {
         return true;
       },
       operationState: operationState,
-      caseStyle: caseStyle,
       editTools: _EditToolsWidget(imageModel!),
       child: maskShader != null
           ? ShaderMask(

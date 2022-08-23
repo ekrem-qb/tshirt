@@ -19,7 +19,6 @@ class BoardWidget extends StatefulWidget {
     super.key,
     this.controller,
     this.background,
-    this.caseStyle = const CaseStyle(),
     this.customBuilder,
     this.tapItemToMoveToTop = true,
     this.enableCenterGuides = true,
@@ -35,9 +34,6 @@ class BoardWidget extends StatefulWidget {
   final Widget? background;
 
   final bool enableCenterGuides;
-
-  /// 操作框样式
-  final CaseStyle? caseStyle;
 
   /// 自定义类型控件构建器
   final Widget? Function(Item item)? customBuilder;
@@ -82,7 +78,6 @@ class BoardWidgetState extends State<BoardWidget> with SafeState<BoardWidget> {
 
     _children.add(item.copyWith(
       id: item.id ?? _lastId,
-      caseStyle: item.caseStyle ?? widget.caseStyle,
     ));
 
     _lastId++;
@@ -156,7 +151,6 @@ class BoardWidgetState extends State<BoardWidget> with SafeState<BoardWidget> {
       key: _getKey(item.id),
       onDelete: () => _onDelete(item),
       onPointerDown: () => _moveItemToTop(item.id),
-      caseStyle: item.caseStyle,
       operationState:
           _focusedItemId == item.id ? OperationState.idle : _operationState,
       child: Container(
@@ -174,7 +168,6 @@ class BoardWidgetState extends State<BoardWidget> with SafeState<BoardWidget> {
         text: item.text,
         onDelete: () => _onDelete(item),
         onPointerDown: () => _moveItemToTop(item.id),
-        caseStyle: item.caseStyle,
         operationState:
             _focusedItemId == item.id ? OperationState.idle : _operationState,
       );
@@ -193,7 +186,6 @@ class BoardWidgetState extends State<BoardWidget> with SafeState<BoardWidget> {
         image: item.image,
         onDelete: () => _onDelete(item),
         onPointerDown: () => _moveItemToTop(item.id),
-        caseStyle: item.caseStyle,
         operationState:
             _focusedItemId == item.id ? OperationState.idle : _operationState,
       );
@@ -202,7 +194,6 @@ class BoardWidgetState extends State<BoardWidget> with SafeState<BoardWidget> {
         key: _getKey(item.id),
         onDelete: () => _onDelete(item),
         onPointerDown: () => _moveItemToTop(item.id),
-        caseStyle: item.caseStyle,
         operationState:
             _focusedItemId == item.id ? OperationState.idle : _operationState,
         child: item.child,

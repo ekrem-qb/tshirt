@@ -17,7 +17,6 @@ class ImageItem extends Item with ChangeNotifier {
     this._image, {
     super.id,
     super.onDelete,
-    super.caseStyle,
     bool? tapToEdit,
   }) : super(
           child: const SizedBox.shrink(),
@@ -30,14 +29,12 @@ class ImageItem extends Item with ChangeNotifier {
     int? id,
     Widget? child,
     Future<bool> Function()? onDelete,
-    CaseStyle? caseStyle,
     bool? tapToEdit,
   }) {
     return ImageItem(
       image ?? this.image,
       id: id ?? this.id,
       onDelete: onDelete ?? this.onDelete,
-      caseStyle: caseStyle ?? this.caseStyle,
       tapToEdit: tapToEdit ?? this.tapToEdit,
     );
   }
@@ -92,8 +89,8 @@ class ImageItem extends Item with ChangeNotifier {
   void calculateImageSize() async {
     final imageInfo = await image.getImageInfo();
     imageSize = ui.Size(
-      (imageInfo.image.width / 4) + (caseStyle?.iconSize ?? 24),
-      (imageInfo.image.height / 4) + (caseStyle?.iconSize ?? 24),
+      (imageInfo.image.width / 4) + CaseStyle.iconSize,
+      (imageInfo.image.height / 4) + CaseStyle.iconSize,
     );
     final offset = ui.Offset(
         imageSize!.width - itemController.config!.value.size!.width,
@@ -112,8 +109,8 @@ class ImageItem extends Item with ChangeNotifier {
 
   bool? onSizeChanged(Size newCaseSize) {
     caseSize = Size(
-      newCaseSize.width - (caseStyle?.iconSize ?? 24),
-      newCaseSize.height - (caseStyle?.iconSize ?? 24),
+      newCaseSize.width - CaseStyle.iconSize,
+      newCaseSize.height - CaseStyle.iconSize,
     );
     if (_maskSvgString != null) {
       _calculateSvgSize();

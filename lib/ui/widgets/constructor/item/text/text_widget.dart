@@ -13,14 +13,12 @@ class TextItemWidget extends StatelessWidget {
     this.onDelete,
     this.onPointerDown,
     this.operationState,
-    this.caseStyle,
   });
 
   final String text;
   final void Function()? onDelete;
   final void Function()? onPointerDown;
   final OperationState? operationState;
-  final CaseStyle? caseStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +29,6 @@ class TextItemWidget extends StatelessWidget {
         onPointerDown: onPointerDown,
         onDelete: onDelete,
         operationState: operationState,
-        caseStyle: caseStyle,
       ),
     );
   }
@@ -43,14 +40,12 @@ class _ItemWidget extends StatelessWidget {
     required this.onPointerDown,
     required this.onDelete,
     required this.operationState,
-    this.caseStyle,
   });
 
   final String text;
   final void Function()? onPointerDown;
   final void Function()? onDelete;
   final OperationState? operationState;
-  final CaseStyle? caseStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +60,6 @@ class _ItemWidget extends StatelessWidget {
       onDelete: onDelete,
       operationState: operationState,
       onOperationStateChanged: textModel.onOperationStateChanged,
-      caseStyle: caseStyle,
       onFlipped: (newFlipMatrix) {
         textModel.flipMatrix = newFlipMatrix;
         return true;

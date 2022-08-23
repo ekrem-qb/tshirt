@@ -5,7 +5,6 @@ import '../library/modal_top_sheet.dart';
 import 'board/board_widget.dart';
 import 'item/image/image_choose_widget.dart';
 import 'item/image/image_model.dart';
-import 'item/item_model.dart';
 import 'item/paint/paint_model.dart';
 import 'item/text/text_model.dart';
 
@@ -61,13 +60,7 @@ class ConstructorScreenState extends State<ConstructorScreen> {
               // width: 297 * 2,
               // height: 210 * 2,
               child: ClipRect(
-                child: BoardWidget(
-                  controller: _boardController,
-                  caseStyle: const CaseStyle(
-                    borderColor: Colors.grey,
-                    iconColor: Colors.white,
-                  ),
-                ),
+                child: BoardWidget(controller: _boardController),
               ),
             ),
           ],
@@ -107,12 +100,7 @@ class ConstructorScreenState extends State<ConstructorScreen> {
                     FloatingActionButton(
                         onPressed: () {
                           _boardController.add(
-                            const PaintItem(
-                              caseStyle: CaseStyle(
-                                borderColor: Colors.grey,
-                                iconColor: Colors.white,
-                              ),
-                            ),
+                            const PaintItem(),
                           );
                         },
                         child: const Icon(Icons.edit_rounded)),

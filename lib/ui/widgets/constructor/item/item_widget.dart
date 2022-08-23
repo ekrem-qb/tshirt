@@ -50,7 +50,6 @@ class ItemWidget extends StatefulWidget {
     required this.child,
     this.isCentered = false,
     this.editTools,
-    this.caseStyle = const CaseStyle(),
     this.tapToEdit = false,
     this.operationState = OperationState.idle,
     this.isEditable = false,
@@ -80,9 +79,6 @@ class ItemWidget extends StatefulWidget {
 
   /// 能否编辑
   final bool isEditable;
-
-  /// 外框样式
-  final CaseStyle? caseStyle;
 
   /// 点击进行编辑，默认false
   final bool tapToEdit;
@@ -132,12 +128,9 @@ class ItemWidgetState extends State<ItemWidget> with SafeState<ItemWidget> {
     widget.onOperationStateChanged?.call(newOperationState);
   }
 
-  /// 外框样式
-  CaseStyle get _caseStyle => widget.caseStyle ?? const CaseStyle();
-
   static const int moveSnappingTreshold = 15;
   late Size originalSize;
-  late final double minWidthAndHeight;
+  static const double minWidthAndHeight = CaseStyle.iconSize * 3;
   late double maxWidthAndHeight;
   late Offset center;
   late Offset movingStartPosition;
@@ -154,7 +147,6 @@ class ItemWidgetState extends State<ItemWidget> with SafeState<ItemWidget> {
     super.initState();
     operationState = widget.operationState ?? OperationState.idle;
     config = SafeValueNotifier<Config>(Config());
-    minWidthAndHeight = _caseStyle.iconSize * 3;
 
     config.value.offset = const Offset(double.maxFinite, double.maxFinite);
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -489,8 +481,8 @@ class ItemWidgetState extends State<ItemWidget> with SafeState<ItemWidget> {
       content = GetSize(
         onChange: (Size? size) {
           if (size != null && config.value.size == null) {
-            config.value.size = Size(size.width + _caseStyle.iconSize,
-                size.height + _caseStyle.iconSize);
+            config.value.size = Size(size.width + CaseStyle.iconSize,
+                size.height + CaseStyle.iconSize);
             originalSize = config.value.size!;
             currentUnfittedSize = originalSize;
             safeSetState(() {});
@@ -503,7 +495,7 @@ class ItemWidgetState extends State<ItemWidget> with SafeState<ItemWidget> {
     if (widget.isCentered) content = Center(child: content);
 
     return Padding(
-      padding: EdgeInsets.all(_caseStyle.iconSize / 2),
+      padding: const EdgeInsets.all(CaseStyle.iconSize / 2),
       child: content,
     );
   }
@@ -511,12 +503,12 @@ class ItemWidgetState extends State<ItemWidget> with SafeState<ItemWidget> {
   /// 边框
   Widget get _border {
     return Padding(
-      padding: EdgeInsets.all(_caseStyle.iconSize / 2),
+      padding: const EdgeInsets.all(CaseStyle.iconSize / 2),
       child: DecoratedBox(
         decoration: BoxDecoration(
           border: Border.all(
-            color: _caseStyle.borderColor,
-            width: _caseStyle.borderWidth,
+            color: CaseStyle.borderColor,
+            width: CaseStyle.borderWidth,
           ),
         ),
       ),
@@ -644,17 +636,17 @@ class ItemWidgetState extends State<ItemWidget> with SafeState<ItemWidget> {
   /// 操作手柄壳
   Widget _toolCase(Widget child) {
     return SizedBox(
-      width: _caseStyle.iconSize,
-      height: _caseStyle.iconSize,
+      width: CaseStyle.iconSize,
+      height: CaseStyle.iconSize,
       child: DecoratedBox(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           shape: BoxShape.circle,
-          color: _caseStyle.borderColor,
+          color: CaseStyle.borderColor,
         ),
         child: IconTheme(
           data: Theme.of(context).iconTheme.copyWith(
-                color: _caseStyle.iconColor,
-                size: _caseStyle.iconSize * 0.5,
+                color: CaseStyle.iconColor,
+                size: CaseStyle.iconSize * 0.5,
               ),
           child: child,
         ),

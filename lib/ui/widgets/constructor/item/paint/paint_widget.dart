@@ -100,7 +100,6 @@ class PaintItemWidgetState extends State<PaintItemWidget>
       editTools: _tools,
       operationState: _operationState,
       onDelete: widget.onDelete,
-      caseStyle: widget.stackDrawing.caseStyle,
       onOperationStateChanged: (OperationState os) {
         if (os == OperationState.editing && !_isEditing) {
           _isEditing = true;
@@ -158,7 +157,7 @@ class PaintItemWidgetState extends State<PaintItemWidget>
   /// 工具层
   Widget? get _tools {
     return Padding(
-      padding: EdgeInsets.all(widget.stackDrawing.caseStyle!.iconSize / 2),
+      padding: const EdgeInsets.all(CaseStyle.iconSize / 2),
       child: Column(
         children: <Widget>[
           _toolBar,
@@ -191,8 +190,8 @@ class PaintItemWidgetState extends State<PaintItemWidget>
     return GestureDetector(
       onTap: onTap,
       child: SizedBox(
-        width: widget.stackDrawing.caseStyle!.iconSize * 1.5,
-        height: widget.stackDrawing.caseStyle!.iconSize * 1.6,
+        width: CaseStyle.iconSize * 1.5,
+        height: CaseStyle.iconSize * 1.5,
         child: ExValueBuilder<DrawConfig>(
           valueListenable: _drawingController.drawConfig,
           shouldRebuild:
@@ -205,7 +204,7 @@ class PaintItemWidgetState extends State<PaintItemWidget>
               color: drawConfig?.paintType == type
                   ? Theme.of(context).primaryColor
                   : null,
-              size: widget.stackDrawing.caseStyle?.iconSize,
+              size: CaseStyle.iconSize,
             );
           },
         ),
@@ -215,21 +214,19 @@ class PaintItemWidgetState extends State<PaintItemWidget>
 
   /// 构建操作栏
   Widget get _buildActions {
-    final double iconSize = widget.stackDrawing.caseStyle!.iconSize;
-
     return Row(
       children: <Widget>[
         Container(
-          height: iconSize * 1.5,
+          height: CaseStyle.iconSize * 1.6,
           width: 80,
           padding: const EdgeInsets.symmetric(horizontal: 10),
           child: SliderTheme(
-            data: SliderThemeData(
+            data: const SliderThemeData(
               thumbShape: RoundSliderThumbShape(
-                enabledThumbRadius: iconSize / 2.5,
+                enabledThumbRadius: CaseStyle.iconSize / 2.5,
                 elevation: 0,
               ),
-              overlayShape: const RoundSliderOverlayShape(overlayRadius: 0),
+              overlayShape: RoundSliderOverlayShape(overlayRadius: 0),
             ),
             child: ExValueBuilder<double>(
               valueListenable: _indicator,
@@ -249,8 +246,8 @@ class PaintItemWidgetState extends State<PaintItemWidget>
           ),
         ),
         SizedBox(
-          width: iconSize,
-          height: iconSize,
+          width: CaseStyle.iconSize,
+          height: CaseStyle.iconSize,
           child: ExValueBuilder<DrawConfig?>(
             valueListenable: _drawingController.drawConfig,
             shouldRebuild:
@@ -271,23 +268,25 @@ class PaintItemWidgetState extends State<PaintItemWidget>
         ),
         GestureDetector(
           onTap: () => _drawingController.undo(),
-          child: SizedBox(
-            width: iconSize * 1.6,
-            child: Icon(CupertinoIcons.arrow_turn_up_left, size: iconSize),
+          child: const SizedBox(
+            width: CaseStyle.iconSize * 1.6,
+            child: Icon(CupertinoIcons.arrow_turn_up_left,
+                size: CaseStyle.iconSize),
           ),
         ),
         GestureDetector(
           onTap: () => _drawingController.redo(),
-          child: SizedBox(
-            width: iconSize * 1.6,
-            child: Icon(CupertinoIcons.arrow_turn_up_right, size: iconSize),
+          child: const SizedBox(
+            width: CaseStyle.iconSize * 1.6,
+            child: Icon(CupertinoIcons.arrow_turn_up_right,
+                size: CaseStyle.iconSize),
           ),
         ),
         GestureDetector(
           onTap: () => _drawingController.clear(),
-          child: SizedBox(
-            width: iconSize * 1.6,
-            child: Icon(Icons.clear_all, size: iconSize),
+          child: const SizedBox(
+            width: CaseStyle.iconSize * 1.6,
+            child: Icon(Icons.clear_all, size: CaseStyle.iconSize),
           ),
         ),
       ],
