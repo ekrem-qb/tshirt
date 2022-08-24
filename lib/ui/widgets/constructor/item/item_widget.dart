@@ -449,7 +449,7 @@ class ItemWidgetState extends State<ItemWidget> with SafeState<ItemWidget> {
                     },
                     child: Stack(
                       fit: StackFit.passthrough,
-                      children: <Widget>[
+                      children: [
                         if (operationState != OperationState.complete) _border,
                         _child,
                         if (operationState != OperationState.complete) _flipY,

@@ -130,7 +130,7 @@ class BoardWidgetState extends State<BoardWidget> with SafeState<BoardWidget> {
   Widget build(BuildContext context) {
     final Stack child = Stack(
       fit: StackFit.expand,
-      children: <Widget>[
+      children: [
         if (widget.background != null) widget.background!,
         ..._children.map((Item box) => _buildItem(box)).toList(),
         if (widget.enableCenterGuides)
@@ -174,7 +174,6 @@ class BoardWidgetState extends State<BoardWidget> with SafeState<BoardWidget> {
     } else if (item is PaintItem) {
       child = PaintItemWidget(
         key: _getKey(item.id),
-        stackDrawing: item,
         onDelete: () => _onDelete(item),
         onPointerDown: () => _moveItemToTop(item.id),
         operationState:

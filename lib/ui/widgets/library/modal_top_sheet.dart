@@ -25,7 +25,7 @@ Future<T?> showModalTopSheet<T>({
       pageBuilder: (context, _, __) {
         return Column(
           mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
+          children: [
             Material(
               elevation: 8,
               type: MaterialType.card,

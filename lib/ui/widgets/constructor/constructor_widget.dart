@@ -67,12 +67,12 @@ class ConstructorScreenState extends State<ConstructorScreen> {
         ),
         floatingActionButton: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
+          children: [
             Flexible(
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
-                  children: <Widget>[
+                  children: [
                     const SizedBox(width: 25),
                     FloatingActionButton(
                         onPressed: () {
@@ -100,7 +100,7 @@ class ConstructorScreenState extends State<ConstructorScreen> {
                     FloatingActionButton(
                         onPressed: () {
                           _boardController.add(
-                            const PaintItem(),
+                            PaintItem(),
                           );
                         },
                         child: const Icon(Icons.edit_rounded)),

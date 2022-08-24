@@ -1,295 +1,115 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_drawing_board/flutter_drawing_board.dart';
+import 'package:provider/provider.dart';
 
 import '../item_model.dart';
 import '../item_widget.dart';
+import 'edit_tools/edit_tools_widget.dart';
 import 'paint_model.dart';
 
-/// 画板外壳
-class PaintItemWidget extends StatefulWidget {
+class PaintItemWidget extends StatelessWidget {
   const PaintItemWidget({
     super.key,
-    required this.stackDrawing,
     this.onDelete,
     this.operationState = OperationState.editing,
     this.onPointerDown,
   });
 
-  @override
-  PaintItemWidgetState createState() => PaintItemWidgetState();
-
-  /// 画板配置对象
-  final PaintItem stackDrawing;
-
-  /// 移除拦截
   final void Function()? onDelete;
 
-  /// 点击回调
   final void Function()? onPointerDown;
 
-  /// 操作状态
   final OperationState? operationState;
-}
-
-class PaintItemWidgetState extends State<PaintItemWidget>
-    with SafeState<PaintItemWidget> {
-  /// 绘制控制器
-  late DrawingController _drawingController;
-
-  /// 绘制线条粗细进度
-  late SafeValueNotifier<double> _indicator;
-
-  /// 是否正在绘制
-  late SafeValueNotifier<bool> _isDrawing;
-
-  /// 操作状态
-  OperationState? _operationState;
-
-  /// 是否正在编辑
-  bool _isEditing = true;
-
-  Matrix4 flipMatrix = Matrix4.identity();
-
-  @override
-  void initState() {
-    super.initState();
-    _operationState = widget.operationState ?? OperationState.editing;
-    _drawingController = DrawingController(config: DrawConfig.def());
-    _indicator = SafeValueNotifier<double>(1);
-    _isDrawing = SafeValueNotifier<bool>(false);
-  }
-
-  @override
-  void didUpdateWidget(covariant PaintItemWidget oldWidget) {
-    if (widget.operationState != oldWidget.operationState) {
-      safeSetState(() => _operationState = widget.operationState);
-    }
-    super.didUpdateWidget(oldWidget);
-  }
-
-  @override
-  void dispose() {
-    _drawingController.dispose();
-    _indicator.dispose();
-    _isDrawing.dispose();
-    super.dispose();
-  }
-
-  /// 选择颜色
-  Future<void> _pickColor() async {
-    final Color? newColor = await showModalBottomSheet<Color?>(
-        context: context,
-        builder: (_) => ColorPic(nowColor: _drawingController.getColor));
-    if (newColor == null) {
-      return;
-    }
-
-    if (newColor != _drawingController.getColor) {
-      _drawingController.setColor = newColor;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (_) => PaintItem(),
+      child: _ItemWidget(
+        onPointerDown: onPointerDown,
+        onDelete: onDelete,
+        operationState: operationState,
+      ),
+    );
+  }
+}
+
+class _ItemWidget extends StatelessWidget {
+  const _ItemWidget({
+    required this.onPointerDown,
+    required this.onDelete,
+    required this.operationState,
+  });
+
+  final void Function()? onPointerDown;
+  final void Function()? onDelete;
+  final OperationState? operationState;
+
+  @override
+  Widget build(BuildContext context) {
+    final paintModel = context.read<PaintItem>();
+
     return ItemWidget(
       isCentered: false,
       isEditable: true,
-      onPointerDown: widget.onPointerDown,
-      tapToEdit: widget.stackDrawing.tapToEdit,
-      editTools: _tools,
-      operationState: _operationState,
-      onDelete: widget.onDelete,
-      onOperationStateChanged: (OperationState os) {
-        if (os == OperationState.editing && !_isEditing) {
-          _isEditing = true;
-          safeSetState(() {});
-        } else if (os != OperationState.editing && _isEditing) {
-          _isEditing = false;
-          safeSetState(() {});
-        }
-
-        return;
-      },
+      onPointerDown: onPointerDown,
+      tapToEdit: paintModel.tapToEdit,
+      editTools: EditToolsWidget(paintModel: paintModel),
+      operationState: operationState,
+      onDelete: onDelete,
+      onOperationStateChanged: paintModel.onOperationStateChanged,
       onFlipped: (newFlipMatrix) {
-        flipMatrix = newFlipMatrix;
-        setState(() {});
+        paintModel.flipMatrix = newFlipMatrix;
         return true;
       },
       child: FittedBox(
         child: SizedBox.fromSize(
-          size: widget.stackDrawing.size,
+          size: PaintItem.size,
           child: Stack(
-            children: <Widget>[
-              FittedBox(
-                child: SizedBox.fromSize(
-                  size: widget.stackDrawing.size,
-                  child: Transform(
-                    transform: flipMatrix,
-                    alignment: Alignment.center,
-                    child: DrawingBoard(
-                      controller: _drawingController,
-                      background: widget.stackDrawing.child,
-                      drawingCallback: (bool isDrawing) {
-                        if (_isDrawing.value != isDrawing) {
-                          _isDrawing.value = isDrawing;
-                        }
-                      },
-                    ),
-                  ),
-                ),
-              ),
-              if (!_isEditing) _mask,
+            children: const [
+              _DrawingBoardWidget(),
+              _EditMask(),
             ],
           ),
         ),
       ),
     );
   }
+}
 
-  /// 绘制拦截图层
-  Widget get _mask {
-    return Positioned.fill(
-      child: Container(color: Colors.transparent),
-    );
-  }
+class _DrawingBoardWidget extends StatelessWidget {
+  const _DrawingBoardWidget();
 
-  /// 工具层
-  Widget? get _tools {
-    return Padding(
-      padding: const EdgeInsets.all(CaseStyle.iconSize / 2),
-      child: Column(
-        children: <Widget>[
-          _toolBar,
-          _buildActions,
-        ],
+  @override
+  Widget build(BuildContext context) {
+    PaintItem paintModel = context.watch<PaintItem>();
+
+    return Transform(
+      transform: paintModel.flipMatrix,
+      alignment: Alignment.center,
+      child: DrawingBoard(
+        controller: paintModel.drawingController,
+        background: paintModel.child,
       ),
     );
   }
+}
 
-  /// 工具栏
-  Widget get _toolBar {
-    return Row(
-      children: <Widget>[
-        _buildToolItem(PaintType.simpleLine, Icons.edit,
-            () => _drawingController.setType = PaintType.simpleLine),
-        _buildToolItem(PaintType.smoothLine, Icons.brush,
-            () => _drawingController.setType = PaintType.smoothLine),
-        _buildToolItem(PaintType.straightLine, Icons.show_chart,
-            () => _drawingController.setType = PaintType.straightLine),
-        _buildToolItem(PaintType.rectangle, Icons.crop_din,
-            () => _drawingController.setType = PaintType.rectangle),
-        _buildToolItem(PaintType.eraser, Icons.auto_fix_normal,
-            () => _drawingController.setType = PaintType.eraser),
-      ],
-    );
-  }
+class _EditMask extends StatelessWidget {
+  const _EditMask();
 
-  /// 构建工具项
-  Widget _buildToolItem(PaintType type, IconData icon, Function() onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: SizedBox(
-        width: CaseStyle.iconSize * 1.5,
-        height: CaseStyle.iconSize * 1.5,
-        child: ExValueBuilder<DrawConfig>(
-          valueListenable: _drawingController.drawConfig,
-          shouldRebuild:
-              (DrawConfig? previousDrawConfig, DrawConfig? newDrawConfig) =>
-                  previousDrawConfig!.paintType == type ||
-                  newDrawConfig!.paintType == type,
-          builder: (_, DrawConfig? drawConfig, __) {
-            return Icon(
-              icon,
-              color: drawConfig?.paintType == type
-                  ? Theme.of(context).primaryColor
-                  : null,
-              size: CaseStyle.iconSize,
-            );
-          },
-        ),
-      ),
-    );
-  }
+  @override
+  Widget build(BuildContext context) {
+    PaintItem? paintModel;
+    final isEditing = context.select((PaintItem model) {
+      paintModel ??= model;
+      return model.isEditing;
+    });
 
-  /// 构建操作栏
-  Widget get _buildActions {
-    return Row(
-      children: <Widget>[
-        Container(
-          height: CaseStyle.iconSize * 1.6,
-          width: 80,
-          padding: const EdgeInsets.symmetric(horizontal: 10),
-          child: SliderTheme(
-            data: const SliderThemeData(
-              thumbShape: RoundSliderThumbShape(
-                enabledThumbRadius: CaseStyle.iconSize / 2.5,
-                elevation: 0,
-              ),
-              overlayShape: RoundSliderOverlayShape(overlayRadius: 0),
-            ),
-            child: ExValueBuilder<double>(
-              valueListenable: _indicator,
-              builder: (_, double? ind, ___) {
-                return Slider(
-                  value: ind ?? 1,
-                  max: 50,
-                  min: 1,
-                  divisions: 50,
-                  label: ind?.floor().toString(),
-                  onChanged: (double newValue) => _indicator.value = newValue,
-                  onChangeEnd: (double newValue) =>
-                      _drawingController.setThickness = newValue,
-                );
-              },
-            ),
-          ),
-        ),
-        SizedBox(
-          width: CaseStyle.iconSize,
-          height: CaseStyle.iconSize,
-          child: ExValueBuilder<DrawConfig?>(
-            valueListenable: _drawingController.drawConfig,
-            shouldRebuild:
-                (DrawConfig? previousDrawConfig, DrawConfig? newDrawConfig) =>
-                    previousDrawConfig!.color != newDrawConfig!.color,
-            builder: (_, DrawConfig? drawConfig, ___) {
-              return TextButton(
-                onPressed: _pickColor,
-                style: TextButton.styleFrom(
-                  padding: EdgeInsets.zero,
-                  backgroundColor: drawConfig?.color,
-                  shape: const RoundedRectangleBorder(),
-                ),
-                child: const SizedBox.shrink(),
-              );
-            },
-          ),
-        ),
-        GestureDetector(
-          onTap: () => _drawingController.undo(),
-          child: const SizedBox(
-            width: CaseStyle.iconSize * 1.6,
-            child: Icon(CupertinoIcons.arrow_turn_up_left,
-                size: CaseStyle.iconSize),
-          ),
-        ),
-        GestureDetector(
-          onTap: () => _drawingController.redo(),
-          child: const SizedBox(
-            width: CaseStyle.iconSize * 1.6,
-            child: Icon(CupertinoIcons.arrow_turn_up_right,
-                size: CaseStyle.iconSize),
-          ),
-        ),
-        GestureDetector(
-          onTap: () => _drawingController.clear(),
-          child: const SizedBox(
-            width: CaseStyle.iconSize * 1.6,
-            child: Icon(Icons.clear_all, size: CaseStyle.iconSize),
-          ),
-        ),
-      ],
-    );
+    return isEditing
+        ? const SizedBox.shrink()
+        : const Positioned.fill(
+            child: ColoredBox(color: Colors.transparent),
+          );
   }
 }
