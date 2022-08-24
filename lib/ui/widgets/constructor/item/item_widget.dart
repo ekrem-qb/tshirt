@@ -432,6 +432,7 @@ class ItemWidgetState extends State<ItemWidget> with SafeState<ItemWidget> {
               controller: _fFloatController,
               tapToShow: false,
               canTouchOutside: false,
+              alignment: FFloatAlignment.bottomCenter,
               anchor: MouseRegion(
                 cursor: _cursor,
                 child: Listener(

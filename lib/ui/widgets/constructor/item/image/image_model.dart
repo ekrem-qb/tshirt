@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../../providers/library/image_provider_extension.dart';
-import '../../../library/modal_top_sheet.dart';
+import '../../../library/modal_sheet.dart';
 import '../item_model.dart';
 import '../item_widget.dart';
 import 'image_choose_widget.dart';
@@ -140,7 +140,7 @@ class ImageItem extends Item with ChangeNotifier {
   }
 
   void chooseMask(BuildContext context) async {
-    await showModalTopSheet(
+    await showModal(
       context: context,
       child: Padding(
         padding: const EdgeInsets.all(64),
@@ -175,7 +175,7 @@ class ImageItem extends Item with ChangeNotifier {
   }
 
   void chooseImage(BuildContext context) async {
-    final result = await showModalTopSheet<ImageProvider>(
+    final result = await showModal<ImageProvider>(
       context: context,
       child: imageChooseWidget(context),
     );

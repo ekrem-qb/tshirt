@@ -2,7 +2,7 @@ import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../library/modal_top_sheet.dart';
+import '../../../../library/modal_sheet.dart';
 import '../text_model.dart';
 import 'edit_tools_model.dart';
 import 'font_picker/font_picker_widget.dart';
@@ -43,7 +43,7 @@ class _FontFamilyPickWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return FloatingActionButton.small(
       onPressed: () {
-        showModalTopSheet(
+        showModal(
           context: context,
           child: FontPickerWidget(
             textModel: textModel,
@@ -65,9 +65,12 @@ class _ColorPickWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return FloatingActionButton.small(
       onPressed: () {
-        showModalTopSheet(
+        showModal(
           context: context,
-          child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints.tightFor(
+              height: 432,
+            ),
             child: ColorPicker(
               hasBorder: true,
               wheelHasBorder: true,

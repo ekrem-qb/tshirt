@@ -1,33 +1,22 @@
 import 'package:flutter/material.dart';
 
-Future<T?> showModalTopSheet<T>({
+Future<T?> showModal<T>({
   required BuildContext context,
-  Widget? child,
-  Color? backgroundColor,
-  double? elevation,
-  ShapeBorder? shape,
-  Clip? clipBehavior,
-  BoxConstraints? constraints,
-  Color? barrierColor,
-  bool isScrollControlled = false,
-  bool useRootNavigator = false,
-  bool isDismissible = true,
-  bool enableDrag = true,
-  RouteSettings? routeSettings,
-  AnimationController? transitionAnimationController,
-  Offset? anchorPoint,
+  required Widget child,
+  bool dimBackground = false,
 }) {
   return showGeneralDialog(
       context: context,
       barrierDismissible: true,
       barrierLabel: '',
-      barrierColor: Colors.transparent,
+      barrierColor: dimBackground ? Colors.black54 : Colors.transparent,
       pageBuilder: (context, _, __) {
         return Column(
-          mainAxisAlignment: MainAxisAlignment.start,
+          // mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.end,
           children: [
             Material(
-              elevation: 8,
+              elevation: 64,
               type: MaterialType.card,
               child: child,
             ),
@@ -40,7 +29,8 @@ Future<T?> showModalTopSheet<T>({
             parent: animation,
             curve: Curves.easeOutCubic,
           ).drive(Tween<Offset>(
-            begin: const Offset(0, -1.0),
+            // begin: const Offset(0, -1.0),
+            begin: const Offset(0, 1.0),
             end: Offset.zero,
           )),
           child: child,

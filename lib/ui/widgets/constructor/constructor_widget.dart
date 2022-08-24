@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 // import '../../../resources/images.dart';
-import '../library/modal_top_sheet.dart';
+import '../library/modal_sheet.dart';
 import 'board/board_widget.dart';
 import 'item/image/image_choose_widget.dart';
 import 'item/image/image_model.dart';
@@ -84,7 +84,7 @@ class ConstructorScreenState extends State<ConstructorScreen> {
                     _spacer,
                     FloatingActionButton(
                       onPressed: () async {
-                        final result = await showModalTopSheet<ImageProvider>(
+                        final result = await showModal<ImageProvider>(
                           context: context,
                           child: imageChooseWidget(context),
                         );
