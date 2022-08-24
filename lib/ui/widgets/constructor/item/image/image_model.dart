@@ -143,21 +143,29 @@ class ImageItem extends Item with ChangeNotifier {
     await showModal(
       context: context,
       child: Padding(
-        padding: const EdgeInsets.all(64),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            ElevatedButton.icon(
-              onPressed: _pickSvgString,
-              icon: const Icon(Icons.file_open_rounded),
-              label: const Text('File'),
-            ),
-            ElevatedButton.icon(
-              onPressed: () => maskSvgString = null,
-              icon: const Icon(Icons.not_interested_rounded),
-              label: const Text('None'),
-            ),
-          ],
+        padding: const EdgeInsets.all(16),
+        child: SizedBox(
+          height: 64,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: _pickSvgString,
+                  icon: const Icon(Icons.file_open_rounded),
+                  label: const Text('File'),
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: () => maskSvgString = null,
+                  icon: const Icon(Icons.not_interested_rounded),
+                  label: const Text('None'),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
