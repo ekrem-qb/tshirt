@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../../providers/library/image_provider_extension.dart';
+import '../../../../../resources/filters.dart';
 import '../../../library/modal_sheet.dart';
 import '../item_model.dart';
 import '../item_widget.dart';
@@ -86,6 +87,13 @@ class ImageItem extends Item with ChangeNotifier {
     notifyListeners();
   }
 
+  List<double> _filter = filterPresets.values.first;
+  List<double> get filter => _filter;
+  set filter(List<double> filter) {
+    _filter = filter;
+    notifyListeners();
+  }
+
   void calculateImageSize() async {
     final imageInfo = await image.getImageInfo();
     imageSize = ui.Size(
@@ -139,39 +147,7 @@ class ImageItem extends Item with ChangeNotifier {
     return true;
   }
 
-  void chooseMask(BuildContext context) async {
-    await showModal(
-      context: context,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: SizedBox(
-          height: 64,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Expanded(
-                child: ElevatedButton.icon(
-                  onPressed: _pickSvgString,
-                  icon: const Icon(Icons.file_open_rounded),
-                  label: const Text('File'),
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: ElevatedButton.icon(
-                  onPressed: () => maskSvgString = null,
-                  icon: const Icon(Icons.not_interested_rounded),
-                  label: const Text('None'),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _pickSvgString() async {
+  void pickSvgString() async {
     final result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
       allowedExtensions: <String>['svg'],
