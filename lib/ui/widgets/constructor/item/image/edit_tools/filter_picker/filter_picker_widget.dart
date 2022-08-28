@@ -3,22 +3,22 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
-import '../../../../../resources/filters.dart';
-import 'image_model.dart';
+import '../../../../../../../resources/filters.dart';
+import '../../image_model.dart';
 
 @immutable
-class FilterSelectWidget extends StatefulWidget {
-  const FilterSelectWidget(this.imageModel, {super.key});
+class FilterPickerWidget extends StatefulWidget {
+  const FilterPickerWidget(this.imageModel, {super.key});
 
   final ImageItem imageModel;
 
   final EdgeInsets padding = const EdgeInsets.symmetric(vertical: 24.0);
 
   @override
-  _FilterSelectWidgetState createState() => _FilterSelectWidgetState();
+  _FilterPickerWidgetState createState() => _FilterPickerWidgetState();
 }
 
-class _FilterSelectWidgetState extends State<FilterSelectWidget> {
+class _FilterPickerWidgetState extends State<FilterPickerWidget> {
   /// filter per screen is by default five
   static const _filtersPerScreen = 5;
 

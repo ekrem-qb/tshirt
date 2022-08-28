@@ -29,18 +29,14 @@ class FontPicker extends ChangeNotifier {
     'Permanent Marker',
     'Satisfy',
   ];
-
   List<String> get fonts => _fonts;
-
   set fonts(List<String> fonts) {
     _fonts = fonts;
     notifyListeners();
   }
 
   int _selectedIndex = 0;
-
   int get selectedIndex => _selectedIndex;
-
   set selectedIndex(int selectedIndex) {
     _selectedIndex = selectedIndex;
     notifyListeners();

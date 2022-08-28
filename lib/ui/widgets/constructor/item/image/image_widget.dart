@@ -4,7 +4,8 @@ import 'package:provider/provider.dart';
 import '../../../library/modal_sheet.dart';
 import '../item_model.dart';
 import '../item_widget.dart';
-import 'filter_select_widget.dart';
+import 'edit_tools/edit_tools_widget.dart';
+import 'edit_tools/filter_picker/filter_picker_widget.dart';
 import 'image_model.dart';
 
 class ImageItemWidget extends StatelessWidget {
@@ -69,7 +70,7 @@ class _ItemWidget extends StatelessWidget {
         return true;
       },
       operationState: operationState,
-      editTools: _EditToolsWidget(imageModel!),
+      editTools: EditToolsWidget(imageModel!),
       child: maskShader != null
           ? ShaderMask(
               blendMode: BlendMode.dstIn,
@@ -114,73 +115,5 @@ class _ImageWidget extends StatelessWidget {
         ),
       );
     }
-  }
-}
-
-class _EditToolsWidget extends StatelessWidget {
-  const _EditToolsWidget(this.imageModel);
-
-  final ImageItem imageModel;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        ElevatedButton(
-          onPressed: () => imageModel.chooseImage(context),
-          child: const Text('Image'),
-        ),
-        ElevatedButton(
-          onPressed: () => showModal(
-            context: context,
-            child: _MaskSelectWidget(imageModel),
-          ),
-          child: const Text('Mask'),
-        ),
-        ElevatedButton(
-          onPressed: () => showModal(
-            context: context,
-            child: FilterSelectWidget(imageModel),
-          ),
-          child: const Text('Filter'),
-        ),
-      ],
-    );
-  }
-}
-
-class _MaskSelectWidget extends StatelessWidget {
-  const _MaskSelectWidget(this.imageModel);
-
-  final ImageItem imageModel;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: SizedBox(
-        height: 64,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(
-              child: ElevatedButton.icon(
-                onPressed: imageModel.pickSvgString,
-                icon: const Icon(Icons.file_open_rounded),
-                label: const Text('File'),
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: ElevatedButton.icon(
-                onPressed: () => imageModel.maskSvgString = null,
-                icon: const Icon(Icons.not_interested_rounded),
-                label: const Text('None'),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 }

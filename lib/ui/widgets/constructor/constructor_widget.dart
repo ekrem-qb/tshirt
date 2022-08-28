@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 // import '../../../resources/images.dart';
 import '../library/modal_sheet.dart';
 import 'board/board_widget.dart';
-import 'item/image/image_choose_widget.dart';
+import 'item/image/edit_tools/image_picker/image_picker_widget.dart';
 import 'item/image/image_model.dart';
 import 'item/paint/paint_model.dart';
 import 'item/text/text_model.dart';
@@ -86,7 +86,7 @@ class ConstructorScreenState extends State<ConstructorScreen> {
                       onPressed: () async {
                         final result = await showModal<ImageProvider>(
                           context: context,
-                          child: imageChooseWidget(context),
+                          child: const ImagePickerWidget(),
                         );
                         if (result != null) {
                           _boardController.add(

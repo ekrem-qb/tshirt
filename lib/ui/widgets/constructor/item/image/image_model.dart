@@ -11,7 +11,8 @@ import '../../../../../resources/filters.dart';
 import '../../../library/modal_sheet.dart';
 import '../item_model.dart';
 import '../item_widget.dart';
-import 'image_choose_widget.dart';
+import 'edit_tools/image_picker/image_picker_widget.dart';
+import 'edit_tools/mask_picker/mask_picker_model.dart';
 
 class ImageItem extends Item with ChangeNotifier {
   ImageItem(
@@ -109,7 +110,7 @@ class ImageItem extends Item with ChangeNotifier {
   }
 
   Future<void> _parseSvg() async {
-    _maskSvg = await svg.fromSvgString(maskSvgString!, '');
+    _maskSvg = await svg.fromSvgString(generateMaskSVG(maskSvgString!), '');
     _calculateSvgSize();
     _maskSvgOldSize = _maskSvgCurrentSize;
     _renderSvg();
@@ -147,21 +148,10 @@ class ImageItem extends Item with ChangeNotifier {
     return true;
   }
 
-  void pickSvgString() async {
-    final result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: <String>['svg'],
-    );
-    if (result != null) {
-      final file = File(result.files.single.path!);
-      maskSvgString = await file.readAsString();
-    }
-  }
-
   void chooseImage(BuildContext context) async {
     final result = await showModal<ImageProvider>(
       context: context,
-      child: imageChooseWidget(context),
+      child: const ImagePickerWidget(),
     );
     if (result != null) {
       image = result;
