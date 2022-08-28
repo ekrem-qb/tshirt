@@ -132,6 +132,7 @@ class ItemWidgetState extends State<ItemWidget> with SafeState<ItemWidget> {
   late Size originalSize;
   static const double minWidthAndHeight = CaseStyle.iconSize * 3;
   late double maxWidthAndHeight;
+  final itemKey = GlobalKey();
   late Offset center;
   late Offset movingStartPosition;
   late Offset movingStartOffset;
@@ -190,7 +191,7 @@ class ItemWidgetState extends State<ItemWidget> with SafeState<ItemWidget> {
             .center ??
         Offset.zero;
     final Offset selfCenter = config.value.size?.center(Offset.zero) ??
-        context.size?.center(Offset.zero) ??
+        itemKey.currentContext?.size?.center(Offset.zero) ??
         Offset.zero;
     center = ownerCenter - selfCenter;
     return center;
@@ -416,62 +417,62 @@ class ItemWidgetState extends State<ItemWidget> with SafeState<ItemWidget> {
           previousConfig?.angle != newConfig?.angle,
       valueListenable: config,
       builder: (_, Config? config, Widget? child) {
-        return Positioned(
-          top: config?.offset.dy,
-          left: config?.offset.dx,
-          width: config?.size?.width,
-          height: config?.size?.height,
-          child: Transform.rotate(
-            angle: config?.angle ?? 0,
-            child: FFloat(
-              (setter, contentState) {
-                return widget.editTools != null
-                    ? widget.editTools!
-                    : const SizedBox.shrink();
-              },
-              controller: _fFloatController,
-              tapToShow: false,
-              canTouchOutside: false,
-              alignment: FFloatAlignment.bottomCenter,
-              anchor: MouseRegion(
-                cursor: _cursor,
-                child: Listener(
-                  onPointerDown: (_) => _onPointerDown(),
-                  child: GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onPanStart: _movingStart,
-                    onPanUpdate: _moveHandle,
-                    onPanEnd: (_) {
-                      _changeToIdle();
-                      _boardController?.toggleCenterGuides(
-                        newVerticalState: false,
-                        newHorizontalState: false,
-                      );
-                    },
-                    child: Stack(
-                      fit: StackFit.passthrough,
-                      children: [
-                        if (operationState != OperationState.complete) _border,
-                        _child,
-                        if (operationState != OperationState.complete) _flipY,
-                        if (operationState != OperationState.complete) _rotate,
-                        if (operationState != OperationState.complete) _flipX,
-                        if (widget.onDelete != null &&
-                            operationState != OperationState.complete)
-                          _delete,
-                        if (widget.isEditable &&
-                            operationState != OperationState.complete)
-                          _edit,
-                        if (operationState != OperationState.complete) _scale,
-                      ],
-                    ),
-                  ),
-                ),
+        return Listener(
+          onPointerDown: (_) => _onPointerDown(),
+          child: FFloat(
+            (setter, contentState) {
+              return widget.editTools != null
+                  ? widget.editTools!
+                  : const SizedBox.shrink();
+            },
+            controller: _fFloatController,
+            alignment: FFloatAlignment.bottomCenter,
+            child: Positioned(
+              top: config?.offset.dy,
+              left: config?.offset.dx,
+              width: config?.size?.width,
+              height: config?.size?.height,
+              child: Transform.rotate(
+                angle: config?.angle ?? 0,
+                child: child,
               ),
             ),
           ),
         );
       },
+      child: MouseRegion(
+        cursor: _cursor,
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onPanStart: _movingStart,
+          onPanUpdate: _moveHandle,
+          onPanEnd: (_) {
+            _changeToIdle();
+            _boardController?.toggleCenterGuides(
+              newVerticalState: false,
+              newHorizontalState: false,
+            );
+          },
+          child: Stack(
+            key: itemKey,
+            fit: StackFit.passthrough,
+            children: [
+              if (operationState != OperationState.complete) _border,
+              _child,
+              if (operationState != OperationState.complete) _flipY,
+              if (operationState != OperationState.complete) _rotate,
+              if (operationState != OperationState.complete) _flipX,
+              if (widget.onDelete != null &&
+                  operationState != OperationState.complete)
+                _delete,
+              if (widget.isEditable &&
+                  operationState != OperationState.complete)
+                _edit,
+              if (operationState != OperationState.complete) _scale,
+            ],
+          ),
+        ),
+      ),
     );
   }
 
