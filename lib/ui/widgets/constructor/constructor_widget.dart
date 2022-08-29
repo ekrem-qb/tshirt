@@ -27,11 +27,11 @@ class _ConstructorWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final boardController = context.read<Constructor>().boardController;
+    final constructorModel = context.read<Constructor>();
 
     return Listener(
       onPointerDown: (_) {
-        boardController.unFocus();
+        constructorModel.boardController.unFocus();
       },
       behavior: HitTestBehavior.opaque,
       child: Scaffold(
@@ -79,19 +79,24 @@ class _ConstructorWidget extends StatelessWidget {
                           children: [
                             Expanded(
                               child: ElevatedButton.icon(
-                                onPressed: () => boardController.clear(),
+                                onPressed: () {
+                                  constructorModel.boardController.clear();
+                                },
                                 icon: const Icon(Icons.delete_rounded),
                                 label: const Text('Clear'),
                               ),
                             ),
-                            // const SizedBox(width: buttonsSpacing),
-                            // Expanded(
-                            //   child: ElevatedButton.icon(
-                            //     onPressed: () {},
-                            //     icon: const Icon(Icons.flip),
-                            //     label: const Text('Flip'),
-                            //   ),
-                            // ),
+                            const SizedBox(width: buttonsSpacing),
+                            Expanded(
+                              child: ElevatedButton.icon(
+                                onPressed: () {
+                                  constructorModel.isTshirtFlipped =
+                                      !constructorModel.isTshirtFlipped;
+                                },
+                                icon: const Icon(Icons.flip),
+                                label: const Text('Flip'),
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -105,7 +110,7 @@ class _ConstructorWidget extends StatelessWidget {
               height: tshirtSize.height,
               child: Stack(
                 children: const [
-                  Image(image: Images.tshirtFront),
+                  _TshirtWidget(),
                   _BoardWidget(),
                 ],
               ),
@@ -122,7 +127,7 @@ class _ConstructorWidget extends StatelessWidget {
                 Expanded(
                   child: ElevatedButton.icon(
                     onPressed: () {
-                      boardController.add(
+                      constructorModel.boardController.add(
                         TextItem('Text'),
                       );
                     },
@@ -140,7 +145,7 @@ class _ConstructorWidget extends StatelessWidget {
                         child: const ImagePickerWidget(),
                       );
                       if (result != null) {
-                        boardController.add(
+                        constructorModel.boardController.add(
                           ImageItem(result),
                         );
                       }
@@ -153,7 +158,7 @@ class _ConstructorWidget extends StatelessWidget {
                 Expanded(
                   child: ElevatedButton.icon(
                     onPressed: () {
-                      boardController.add(
+                      constructorModel.boardController.add(
                         PaintItem(),
                       );
                     },
@@ -166,6 +171,20 @@ class _ConstructorWidget extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _TshirtWidget extends StatelessWidget {
+  const _TshirtWidget();
+
+  @override
+  Widget build(BuildContext context) {
+    final isTshirtFlipped =
+        context.select((Constructor model) => model.isTshirtFlipped);
+
+    return Image(
+      image: isTshirtFlipped ? Images.tshirtBack : Images.tshirtFront,
     );
   }
 }

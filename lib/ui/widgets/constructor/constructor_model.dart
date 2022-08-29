@@ -13,10 +13,18 @@ class Constructor extends ChangeNotifier {
   }
 
   final boardController = StackBoardController();
+
   Shader? _printMaskShader;
   Shader? get printMaskShader => _printMaskShader;
   set printMaskShader(Shader? printMaskShader) {
     _printMaskShader = printMaskShader;
+    notifyListeners();
+  }
+
+  bool _isTshirtFlipped = false;
+  bool get isTshirtFlipped => _isTshirtFlipped;
+  set isTshirtFlipped(bool isTshirtFlipped) {
+    _isTshirtFlipped = isTshirtFlipped;
     notifyListeners();
   }
 
