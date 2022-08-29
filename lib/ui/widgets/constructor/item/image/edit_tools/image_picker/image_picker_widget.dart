@@ -14,7 +14,7 @@ class ImagePickerWidget extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(16),
       child: SizedBox(
-        height: 64,
+        height: MediaQuery.of(context).size.height / 10,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [

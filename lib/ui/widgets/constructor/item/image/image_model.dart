@@ -148,16 +148,6 @@ class ImageItem extends Item with ChangeNotifier {
     return true;
   }
 
-  void chooseImage(BuildContext context) async {
-    final result = await showModal<ImageProvider>(
-      context: context,
-      child: const ImagePickerWidget(),
-    );
-    if (result != null) {
-      image = result;
-    }
-  }
-
   Future<void> _renderSvg() async {
     _maskSvgImage = await _maskSvg
         .toPicture(

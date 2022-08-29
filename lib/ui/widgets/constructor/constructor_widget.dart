@@ -86,6 +86,7 @@ class ConstructorScreenState extends State<ConstructorScreen> {
                       onPressed: () async {
                         final result = await showModal<ImageProvider>(
                           context: context,
+                          dimBackground: true,
                           child: const ImagePickerWidget(),
                         );
                         if (result != null) {

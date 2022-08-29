@@ -12,7 +12,7 @@ class FilterPickerWidget extends StatefulWidget {
 
   final ImageItem imageModel;
 
-  final EdgeInsets padding = const EdgeInsets.symmetric(vertical: 24.0);
+  final EdgeInsets padding = const EdgeInsets.symmetric(vertical: 64);
 
   @override
   _FilterPickerWidgetState createState() => _FilterPickerWidgetState();
@@ -136,11 +136,14 @@ class _FilterPickerWidgetState extends State<FilterPickerWidget> {
         child: SizedBox(
           width: itemSize,
           height: itemSize,
-          child: const DecoratedBox(
+          child: DecoratedBox(
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.fromBorderSide(
-                BorderSide(width: 6.0, color: Colors.white),
+                BorderSide(
+                  width: 6.0,
+                  color: IconTheme.of(context).color ?? Colors.black,
+                ),
               ),
             ),
           ),
@@ -233,12 +236,20 @@ class FilterItem extends StatelessWidget {
       child: AspectRatio(
         aspectRatio: 1.0,
         child: ClipOval(
-          child: ColorFiltered(
-            colorFilter: ColorFilter.matrix(filter),
-            child: Image(
-              image: imageModel.image,
-              fit: BoxFit.cover,
-              filterQuality: FilterQuality.medium,
+          child: DecoratedBox(
+            decoration: ShapeDecoration(
+              shape: CircleBorder(
+                side: BorderSide(
+                    color: IconTheme.of(context).color ?? Colors.black),
+              ),
+            ),
+            child: ColorFiltered(
+              colorFilter: ColorFilter.matrix(filter),
+              child: Image(
+                image: imageModel.image,
+                fit: BoxFit.cover,
+                filterQuality: FilterQuality.medium,
+              ),
             ),
           ),
         ),
