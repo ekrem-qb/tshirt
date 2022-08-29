@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_drawing_board/flutter_drawing_board.dart';
 
+import '../constructor/constructor_model.dart';
+
 class CenterGuides extends StatefulWidget {
   const CenterGuides({
     super.key,
@@ -60,7 +62,7 @@ class _CenterGuidesPainter extends CustomPainter {
         ..strokeCap = StrokeCap.square
         ..strokeWidth = 2;
 
-      center = size.center(Offset.zero);
+      center = size.center(printOffset);
 
       if (drawVerticalGuides) {
         _drawDashedLine(canvas, size, paint, vertical: true);

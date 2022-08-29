@@ -15,8 +15,7 @@ void main() {
         },
       ),
       theme: ThemeData(
-        brightness:
-            WidgetsBinding.instance.platformDispatcher.platformBrightness,
+        brightness: Brightness.light,
       ),
       home: const ConstructorScreen(),
     ),

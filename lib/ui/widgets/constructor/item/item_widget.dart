@@ -5,6 +5,7 @@ import 'package:flutter_drawing_board/flutter_drawing_board.dart';
 
 import '../../library/ffloat.dart';
 import '../board/board_widget.dart';
+import '../constructor_model.dart';
 import 'item_model.dart';
 
 /// 配置项
@@ -185,11 +186,12 @@ class ItemWidgetState extends State<ItemWidget> with SafeState<ItemWidget> {
   }
 
   Offset _recalculateCenter() {
-    final Offset ownerCenter = context
-            .findAncestorRenderObjectOfType<RenderObject>()
-            ?.paintBounds
-            .center ??
-        Offset.zero;
+    final Offset ownerCenter = (context
+                .findAncestorRenderObjectOfType<RenderObject>()
+                ?.paintBounds
+                .center ??
+            Offset.zero) +
+        printOffset;
     final Offset selfCenter = config.value.size?.center(Offset.zero) ??
         itemKey.currentContext?.size?.center(Offset.zero) ??
         Offset.zero;
