@@ -62,7 +62,7 @@ class _CenterGuidesPainter extends CustomPainter {
         ..strokeCap = StrokeCap.square
         ..strokeWidth = 2;
 
-      center = size.center(printOffset);
+      center = size.center(printOffsetFromCenter);
 
       if (drawVerticalGuides) {
         _drawDashedLine(canvas, size, paint, vertical: true);

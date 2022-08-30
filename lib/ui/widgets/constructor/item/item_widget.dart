@@ -191,7 +191,7 @@ class ItemWidgetState extends State<ItemWidget> with SafeState<ItemWidget> {
                 ?.paintBounds
                 .center ??
             Offset.zero) +
-        printOffset;
+        printOffsetFromCenter;
     final Offset selfCenter = config.value.size?.center(Offset.zero) ??
         itemKey.currentContext?.size?.center(Offset.zero) ??
         Offset.zero;

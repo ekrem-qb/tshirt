@@ -1,5 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:screenshot/screenshot.dart';
 
 import '../../../resources/images.dart';
 import '../library/modal_sheet.dart';
@@ -9,6 +11,7 @@ import 'item/image/edit_tools/image_picker/image_picker_widget.dart';
 import 'item/image/image_model.dart';
 import 'item/paint/paint_model.dart';
 import 'item/text/text_model.dart';
+import 'print_hole_clipper.dart';
 
 const buttonsSpacing = 16.0;
 
@@ -61,14 +64,34 @@ class _ConstructorWidget extends StatelessWidget {
                                 label: const Text('Back'),
                               ),
                             ),
-                            // const SizedBox(width: buttonsSpacing),
-                            // Expanded(
-                            //   child: ElevatedButton.icon(
-                            //     onPressed: () {},
-                            //     icon: const Icon(Icons.print_rounded),
-                            //     label: const Text('Print'),
-                            //   ),
-                            // ),
+                            const SizedBox(width: buttonsSpacing),
+                            Expanded(
+                              child: ElevatedButton.icon(
+                                onPressed: () async {
+                                  constructorModel.isPrinting = true;
+
+                                  WidgetsBinding.instance
+                                      .addPostFrameCallback((_) async {
+                                    final bytes = await constructorModel
+                                        .screenshotController
+                                        .capture();
+                                    await showCupertinoDialog(
+                                      barrierDismissible: true,
+                                      context: context,
+                                      builder: (_) => Center(
+                                        child: Card(
+                                          child: Image.memory(bytes!),
+                                        ),
+                                      ),
+                                    );
+
+                                    constructorModel.isPrinting = false;
+                                  });
+                                },
+                                icon: const Icon(Icons.print_rounded),
+                                label: const Text('Print'),
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -194,16 +217,27 @@ class _BoardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final boardController = context.read<Constructor>().boardController;
-    final printMaskShader =
-        context.select((Constructor model) => model.printMaskShader);
+    Constructor? constructorModel;
+    final printMaskShader = context.select((Constructor model) {
+      constructorModel ??= model;
+      return model.printMaskShader;
+    });
+    final isPrinting = context.select((Constructor model) => model.isPrinting);
 
     return printMaskShader != null
         ? ShaderMask(
             blendMode: BlendMode.dstIn,
             shaderCallback: (_) => printMaskShader,
-            child: BoardWidget(controller: boardController),
+            child: Screenshot(
+              controller: constructorModel!.screenshotController,
+              child: ClipRect(
+                clipper: isPrinting ? PrintHoleClipper() : null,
+                clipBehavior: isPrinting ? Clip.hardEdge : Clip.none,
+                child:
+                    BoardWidget(controller: constructorModel!.boardController),
+              ),
+            ),
           )
-        : BoardWidget(controller: boardController);
+        : const SizedBox.shrink();
   }
 }
