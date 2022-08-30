@@ -217,6 +217,7 @@ class BoardWidgetState extends State<BoardWidget> with SafeState<BoardWidget> {
 /// 控制器
 class StackBoardController {
   BoardWidgetState? _stackBoardState;
+  late Shader printMaskShader;
 
   /// 检查是否加载
   void _done() {

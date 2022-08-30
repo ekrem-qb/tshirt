@@ -421,24 +421,46 @@ class ItemWidgetState extends State<ItemWidget> with SafeState<ItemWidget> {
       builder: (_, Config? config, Widget? child) {
         return Listener(
           onPointerDown: (_) => _onPointerDown(),
-          child: FFloat(
-            (setter, contentState) {
-              return widget.editTools != null
-                  ? widget.editTools!
-                  : const SizedBox.shrink();
-            },
-            controller: _fFloatController,
-            alignment: FFloatAlignment.bottomCenter,
-            child: Positioned(
-              top: config?.offset.dy,
-              left: config?.offset.dx,
-              width: config?.size?.width,
-              height: config?.size?.height,
-              child: Transform.rotate(
-                angle: config?.angle ?? 0,
-                child: child,
+          child: Stack(
+            children: [
+              ShaderMask(
+                blendMode: BlendMode.dstIn,
+                shaderCallback: (_) => _boardController!.printMaskShader,
+                child: Stack(
+                  children: [
+                    Positioned(
+                      top: config?.offset.dy,
+                      left: config?.offset.dx,
+                      width: config?.size?.width,
+                      height: config?.size?.height,
+                      child: Transform.rotate(
+                        angle: config?.angle ?? 0,
+                        child: _child,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
+              FFloat(
+                (setter, contentState) {
+                  return widget.editTools != null
+                      ? widget.editTools!
+                      : const SizedBox.shrink();
+                },
+                controller: _fFloatController,
+                alignment: FFloatAlignment.bottomCenter,
+                child: Positioned(
+                  top: config?.offset.dy,
+                  left: config?.offset.dx,
+                  width: config?.size?.width,
+                  height: config?.size?.height,
+                  child: Transform.rotate(
+                    angle: config?.angle ?? 0,
+                    child: child,
+                  ),
+                ),
+              ),
+            ],
           ),
         );
       },
@@ -460,7 +482,13 @@ class ItemWidgetState extends State<ItemWidget> with SafeState<ItemWidget> {
             fit: StackFit.passthrough,
             children: [
               if (operationState != OperationState.complete) _border,
-              _child,
+              Visibility(
+                visible: false,
+                maintainState: true,
+                maintainAnimation: true,
+                maintainSize: true,
+                child: _child,
+              ),
               if (operationState != OperationState.complete) _flipY,
               if (operationState != OperationState.complete) _rotate,
               if (operationState != OperationState.complete) _flipX,

@@ -24,13 +24,6 @@ class Constructor extends ChangeNotifier {
     notifyListeners();
   }
 
-  Shader? _printMaskShader;
-  Shader? get printMaskShader => _printMaskShader;
-  set printMaskShader(Shader? printMaskShader) {
-    _printMaskShader = printMaskShader;
-    notifyListeners();
-  }
-
   bool _isTshirtFlipped = false;
   bool get isTshirtFlipped => _isTshirtFlipped;
   set isTshirtFlipped(bool isTshirtFlipped) {
@@ -49,7 +42,7 @@ class Constructor extends ChangeNotifier {
     final svgImage = await svgRoot
         .toPicture(size: tshirtSize)
         .toImage(tshirtSize.width.toInt(), tshirtSize.height.toInt());
-    printMaskShader = ImageShader(
+    boardController.printMaskShader = ImageShader(
       svgImage,
       TileMode.decal,
       TileMode.decal,

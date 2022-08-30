@@ -74,7 +74,7 @@ class _ConstructorWidget extends StatelessWidget {
                                       .addPostFrameCallback((_) async {
                                     final bytes = await constructorModel
                                         .screenshotController
-                                        .capture();
+                                        .capture(delay: Duration.zero);
                                     await showCupertinoDialog(
                                       barrierDismissible: true,
                                       context: context,
@@ -218,26 +218,18 @@ class _BoardWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Constructor? constructorModel;
-    final printMaskShader = context.select((Constructor model) {
+    final isPrinting = context.select((Constructor model) {
       constructorModel ??= model;
-      return model.printMaskShader;
+      return model.isPrinting;
     });
-    final isPrinting = context.select((Constructor model) => model.isPrinting);
 
-    return printMaskShader != null
-        ? ShaderMask(
-            blendMode: BlendMode.dstIn,
-            shaderCallback: (_) => printMaskShader,
-            child: Screenshot(
-              controller: constructorModel!.screenshotController,
-              child: ClipRect(
-                clipper: isPrinting ? PrintHoleClipper() : null,
-                clipBehavior: isPrinting ? Clip.hardEdge : Clip.none,
-                child:
-                    BoardWidget(controller: constructorModel!.boardController),
-              ),
-            ),
-          )
-        : const SizedBox.shrink();
+    return Screenshot(
+      controller: constructorModel!.screenshotController,
+      child: ClipRect(
+        clipper: isPrinting ? PrintHoleClipper() : null,
+        clipBehavior: isPrinting ? Clip.hardEdge : Clip.none,
+        child: BoardWidget(controller: constructorModel!.boardController),
+      ),
+    );
   }
 }
