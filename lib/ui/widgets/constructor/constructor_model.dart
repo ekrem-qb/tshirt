@@ -2,12 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:screenshot/screenshot.dart';
 
+import '../../theme.dart';
 import 'board/board_widget.dart';
-
-const tshirtSize = Size(671, 675);
-const printSize = Size(297, 210);
-const printOffset = Offset(187.5, 127.19);
-const printOffsetFromCenter = Offset(0, -105);
 
 class Constructor extends ChangeNotifier {
   Constructor() {

@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:screenshot/screenshot.dart';
 
+import '../../../domain/entity/tshirt.dart';
 import '../../../resources/images.dart';
+import '../../theme.dart';
 import '../library/modal_sheet.dart';
+import '../preview/preview_widget.dart';
 import 'board/board_widget.dart';
 import 'constructor_model.dart';
 import 'item/image/edit_tools/image_picker/image_picker_widget.dart';
@@ -11,15 +14,15 @@ import 'item/image/image_model.dart';
 import 'item/paint/paint_model.dart';
 import 'item/text/text_model.dart';
 
-const buttonsSpacing = 16.0;
-
 class ConstructorScreen extends StatelessWidget {
   const ConstructorScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-        create: (_) => Constructor(), child: const _ConstructorWidget());
+      create: (_) => Constructor(),
+      child: const _ConstructorWidget(),
+    );
   }
 }
 
@@ -90,11 +93,16 @@ class _ConstructorWidget extends StatelessWidget {
                                     delay: const Duration(milliseconds: 10),
                                   );
 
-                                  showDialog(
-                                    barrierDismissible: true,
-                                    context: context,
-                                    builder: (_) => Center(
-                                      child: Image.memory(croppedImage),
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) {
+                                        return PreviewScreen(
+                                          Tshirt(
+                                            name: 'Custom Design',
+                                            print: croppedImage,
+                                          ),
+                                        );
+                                      },
                                     ),
                                   );
                                 },

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../../../theme.dart';
 import '../../text_model.dart';
 import 'font_picker_model.dart';
 
@@ -91,7 +92,7 @@ class _FontWidget extends StatelessWidget {
         },
         child: FittedBox(
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(buttonsSpacing),
             child: Text(
               fonts[index],
               style: GoogleFonts.getFont(

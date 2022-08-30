@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
+import '../../../../../../theme.dart';
 import '../../../../../camera/camera_widget.dart';
 import '../../../../../library/modal_sheet.dart';
 
@@ -12,7 +13,7 @@ class ImagePickerWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(buttonsSpacing),
       child: SizedBox(
         height: MediaQuery.of(context).size.height / 10,
         child: Row(
@@ -25,7 +26,7 @@ class ImagePickerWidget extends StatelessWidget {
                 label: const Text('File'),
               ),
             ),
-            const SizedBox(width: 16),
+            const SizedBox(width: buttonsSpacing),
             Expanded(
               child: ElevatedButton.icon(
                 onPressed: () => _takePicture(context),

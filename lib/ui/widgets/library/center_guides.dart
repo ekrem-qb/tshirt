@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_drawing_board/flutter_drawing_board.dart';
 
-import '../constructor/constructor_model.dart';
+import '../../theme.dart';
 
 class CenterGuides extends StatefulWidget {
   const CenterGuides({
