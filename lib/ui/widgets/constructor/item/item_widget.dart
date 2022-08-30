@@ -149,12 +149,6 @@ class ItemWidgetState extends State<ItemWidget> with SafeState<ItemWidget> {
     super.initState();
     operationState = widget.operationState ?? OperationState.idle;
     config = SafeValueNotifier<Config>(Config());
-
-    config.value.offset = const Offset(double.maxFinite, double.maxFinite);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _recalculateCenter();
-      config.value.offset = center;
-    });
   }
 
   @override
@@ -399,17 +393,6 @@ class ItemWidgetState extends State<ItemWidget> with SafeState<ItemWidget> {
     safeSetState(() {});
   }
 
-  /// 主体鼠标指针样式
-  MouseCursor get _cursor {
-    if (operationState == OperationState.moving) {
-      return SystemMouseCursors.grabbing;
-    } else if (operationState == OperationState.editing) {
-      return SystemMouseCursors.click;
-    }
-
-    return SystemMouseCursors.grab;
-  }
-
   @override
   Widget build(BuildContext context) {
     return ExValueBuilder<Config>(
@@ -435,7 +418,19 @@ class ItemWidgetState extends State<ItemWidget> with SafeState<ItemWidget> {
                       height: config?.size?.height,
                       child: Transform.rotate(
                         angle: config?.angle ?? 0,
-                        child: _child,
+                        child: GestureDetector(
+                          behavior: HitTestBehavior.opaque,
+                          onPanStart: _movingStart,
+                          onPanUpdate: _moveHandle,
+                          onPanEnd: (_) {
+                            _changeToIdle();
+                            _boardController?.toggleCenterGuides(
+                              newVerticalState: false,
+                              newHorizontalState: false,
+                            );
+                          },
+                          child: _child,
+                        ),
                       ),
                     ),
                   ],
@@ -464,44 +459,21 @@ class ItemWidgetState extends State<ItemWidget> with SafeState<ItemWidget> {
           ),
         );
       },
-      child: MouseRegion(
-        cursor: _cursor,
-        child: GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onPanStart: _movingStart,
-          onPanUpdate: _moveHandle,
-          onPanEnd: (_) {
-            _changeToIdle();
-            _boardController?.toggleCenterGuides(
-              newVerticalState: false,
-              newHorizontalState: false,
-            );
-          },
-          child: Stack(
-            key: itemKey,
-            fit: StackFit.passthrough,
-            children: [
-              if (operationState != OperationState.complete) _border,
-              Visibility(
-                visible: false,
-                maintainState: true,
-                maintainAnimation: true,
-                maintainSize: true,
-                child: _child,
-              ),
-              if (operationState != OperationState.complete) _flipY,
-              if (operationState != OperationState.complete) _rotate,
-              if (operationState != OperationState.complete) _flipX,
-              if (widget.onDelete != null &&
-                  operationState != OperationState.complete)
-                _delete,
-              if (widget.isEditable &&
-                  operationState != OperationState.complete)
-                _edit,
-              if (operationState != OperationState.complete) _scale,
-            ],
-          ),
-        ),
+      child: Stack(
+        key: itemKey,
+        fit: StackFit.passthrough,
+        children: [
+          if (operationState != OperationState.complete) _border,
+          if (operationState != OperationState.complete) _flipY,
+          if (operationState != OperationState.complete) _rotate,
+          if (operationState != OperationState.complete) _flipX,
+          if (widget.onDelete != null &&
+              operationState != OperationState.complete)
+            _delete,
+          if (widget.isEditable && operationState != OperationState.complete)
+            _edit,
+          if (operationState != OperationState.complete) _scale,
+        ],
       ),
     );
   }
@@ -517,6 +489,8 @@ class ItemWidgetState extends State<ItemWidget> with SafeState<ItemWidget> {
                 size.height + CaseStyle.iconSize);
             originalSize = config.value.size!;
             currentUnfittedSize = originalSize;
+
+            config.value.offset = _recalculateCenter();
             safeSetState(() {});
           }
         },
@@ -534,13 +508,15 @@ class ItemWidgetState extends State<ItemWidget> with SafeState<ItemWidget> {
 
   /// 边框
   Widget get _border {
-    return Padding(
-      padding: const EdgeInsets.all(CaseStyle.iconSize / 2),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          border: Border.all(
-            color: CaseStyle.borderColor,
-            width: CaseStyle.borderWidth,
+    return IgnorePointer(
+      child: Padding(
+        padding: const EdgeInsets.all(CaseStyle.iconSize / 2),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: CaseStyle.borderColor,
+              width: CaseStyle.borderWidth,
+            ),
           ),
         ),
       ),

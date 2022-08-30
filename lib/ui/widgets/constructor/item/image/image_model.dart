@@ -1,17 +1,13 @@
-import 'dart:io';
 import 'dart:math';
 import 'dart:ui' as ui;
 
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../../providers/library/image_provider_extension.dart';
 import '../../../../../resources/filters.dart';
-import '../../../library/modal_sheet.dart';
 import '../item_model.dart';
 import '../item_widget.dart';
-import 'edit_tools/image_picker/image_picker_widget.dart';
 import 'edit_tools/mask_picker/mask_picker_model.dart';
 
 class ImageItem extends Item with ChangeNotifier {

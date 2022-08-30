@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../library/modal_sheet.dart';
 import '../item_model.dart';
 import '../item_widget.dart';
 import 'edit_tools/edit_tools_widget.dart';
-import 'edit_tools/filter_picker/filter_picker_widget.dart';
 import 'image_model.dart';
 
 class ImageItemWidget extends StatelessWidget {
