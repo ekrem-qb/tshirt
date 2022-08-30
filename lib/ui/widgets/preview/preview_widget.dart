@@ -28,19 +28,10 @@ class PreviewScreen extends StatelessWidget {
           fit: StackFit.expand,
           alignment: Alignment.center,
           children: [
-            Positioned(
-              width: tshirtSize.width,
-              height: tshirtSize.height,
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  const _TshirtWidget(),
-                  Transform.translate(
-                    offset: printOffsetFromCenter,
-                    child: Image.memory(tshirt.print),
-                  ),
-                ],
-              ),
+            const _TshirtWidget(),
+            Transform.translate(
+              offset: printOffsetFromCenter,
+              child: Image.memory(tshirt.print),
             ),
           ],
         ),
@@ -56,8 +47,12 @@ class _TshirtWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final isFlipped = context.select((Preview model) => model.isFlipped);
 
-    return Image(
-      image: isFlipped ? Images.tshirtBack : Images.tshirtFront,
+    return Positioned(
+      width: tshirtSize.width,
+      height: tshirtSize.height,
+      child: Image(
+        image: isFlipped ? Images.tshirtBack : Images.tshirtFront,
+      ),
     );
   }
 }

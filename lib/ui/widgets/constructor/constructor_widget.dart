@@ -43,172 +43,123 @@ class _ConstructorWidget extends StatelessWidget {
         body: Stack(
           fit: StackFit.expand,
           alignment: Alignment.center,
-          children: [
-            Align(
-              alignment: Alignment.topCenter,
-              child: Padding(
-                padding: const EdgeInsets.all(buttonsSpacing),
-                child: SizedBox(
-                  height: MediaQuery.of(context).size.height / 10,
-                  child: Column(
-                    children: [
-                      Expanded(
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Expanded(
-                              child: ElevatedButton.icon(
-                                onPressed: () {
-                                  Navigator.of(context).maybePop();
-                                },
-                                icon: const Icon(Icons.arrow_back_rounded),
-                                label: const Text('Back'),
-                              ),
-                            ),
-                            const SizedBox(width: buttonsSpacing),
-                            Expanded(
-                              child: ElevatedButton.icon(
-                                onPressed: () async {
-                                  final image = await constructorModel
-                                      .screenshotController
-                                      .capture(delay: Duration.zero);
-
-                                  final croppedImage = await constructorModel
-                                      .screenshotController
-                                      .captureFromWidget(
-                                    SizedBox(
-                                      width: printSize.width,
-                                      height: printSize.height,
-                                      child: FittedBox(
-                                        fit: BoxFit.none,
-                                        clipBehavior: Clip.hardEdge,
-                                        child: Transform.translate(
-                                          offset: -printOffsetFromCenter,
-                                          child: Image.memory(
-                                            image!,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    delay: const Duration(milliseconds: 10),
-                                  );
-
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (context) {
-                                        return PreviewScreen(
-                                          Tshirt(
-                                            name: 'Custom Design',
-                                            print: croppedImage,
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                  );
-                                },
-                                icon: const Icon(Icons.print_rounded),
-                                label: const Text('Print'),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: buttonsSpacing),
-                      Expanded(
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Expanded(
-                              child: ElevatedButton.icon(
-                                onPressed: () {
-                                  constructorModel.boardController.clear();
-                                },
-                                icon: const Icon(Icons.delete_rounded),
-                                label: const Text('Clear'),
-                              ),
-                            ),
-                            const SizedBox(width: buttonsSpacing),
-                            Expanded(
-                              child: ElevatedButton.icon(
-                                onPressed: () {
-                                  constructorModel.isTshirtFlipped =
-                                      !constructorModel.isTshirtFlipped;
-                                },
-                                icon: const Icon(Icons.flip),
-                                label: const Text('Flip'),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
-              width: tshirtSize.width,
-              height: tshirtSize.height,
-              child: Stack(
-                children: const [
-                  _TshirtWidget(),
-                  _BoardWidget(),
-                ],
-              ),
-            ),
+          children: const [
+            _TopSheet(),
+            _TshirtWidget(),
+            _BoardWidget(),
           ],
         ),
-        bottomSheet: Padding(
-          padding: const EdgeInsets.all(buttonsSpacing),
-          child: SizedBox(
-            height: MediaQuery.of(context).size.height / 15,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      constructorModel.boardController.add(
-                        TextItem('Text'),
-                      );
-                    },
-                    icon: const Icon(Icons.text_fields_rounded),
-                    label: const Text('Text'),
-                  ),
+        bottomSheet: const _BottomSheet(),
+      ),
+    );
+  }
+}
+
+class _TopSheet extends StatelessWidget {
+  const _TopSheet();
+
+  @override
+  Widget build(BuildContext context) {
+    final constructorModel = context.read<Constructor>();
+
+    return Align(
+      alignment: Alignment.topCenter,
+      child: Padding(
+        padding: const EdgeInsets.all(buttonsSpacing),
+        child: SizedBox(
+          height: MediaQuery.of(context).size.height / 10,
+          child: Column(
+            children: [
+              Expanded(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          Navigator.of(context).maybePop();
+                        },
+                        icon: const Icon(Icons.arrow_back_rounded),
+                        label: const Text('Back'),
+                      ),
+                    ),
+                    const SizedBox(width: buttonsSpacing),
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: () async {
+                          final image = await constructorModel
+                              .screenshotController
+                              .capture(delay: Duration.zero);
+
+                          final croppedImage = await constructorModel
+                              .screenshotController
+                              .captureFromWidget(
+                            SizedBox(
+                              width: printSize.width,
+                              height: printSize.height,
+                              child: FittedBox(
+                                fit: BoxFit.none,
+                                clipBehavior: Clip.hardEdge,
+                                child: Transform.translate(
+                                  offset: -printOffsetFromCenter,
+                                  child: Image.memory(
+                                    image!,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            delay: const Duration(milliseconds: 10),
+                          );
+
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return PreviewScreen(
+                                  Tshirt(
+                                    name: 'Custom Design',
+                                    print: croppedImage,
+                                  ),
+                                );
+                              },
+                            ),
+                          );
+                        },
+                        icon: const Icon(Icons.print_rounded),
+                        label: const Text('Print'),
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(width: buttonsSpacing),
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: () async {
-                      final result = await showModal<ImageProvider>(
-                        context: context,
-                        dimBackground: true,
-                        child: const ImagePickerWidget(),
-                      );
-                      if (result != null) {
-                        constructorModel.boardController.add(
-                          ImageItem(result),
-                        );
-                      }
-                    },
-                    icon: const Icon(Icons.image_rounded),
-                    label: const Text('Image'),
-                  ),
+              ),
+              const SizedBox(height: buttonsSpacing),
+              Expanded(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          constructorModel.boardController.clear();
+                        },
+                        icon: const Icon(Icons.delete_rounded),
+                        label: const Text('Clear'),
+                      ),
+                    ),
+                    const SizedBox(width: buttonsSpacing),
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          constructorModel.isTshirtFlipped =
+                              !constructorModel.isTshirtFlipped;
+                        },
+                        icon: const Icon(Icons.flip),
+                        label: const Text('Flip'),
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(width: buttonsSpacing),
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      constructorModel.boardController.add(
-                        PaintItem(),
-                      );
-                    },
-                    icon: const Icon(Icons.edit_rounded),
-                    label: const Text('Paint'),
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
@@ -224,8 +175,12 @@ class _TshirtWidget extends StatelessWidget {
     final isTshirtFlipped =
         context.select((Constructor model) => model.isTshirtFlipped);
 
-    return Image(
-      image: isTshirtFlipped ? Images.tshirtBack : Images.tshirtFront,
+    return Positioned(
+      width: tshirtSize.width,
+      height: tshirtSize.height,
+      child: Image(
+        image: isTshirtFlipped ? Images.tshirtBack : Images.tshirtFront,
+      ),
     );
   }
 }
@@ -237,9 +192,76 @@ class _BoardWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final constructorModel = context.read<Constructor>();
 
-    return Screenshot(
-      controller: constructorModel.screenshotController,
-      child: BoardWidget(controller: constructorModel.boardController),
+    return Positioned(
+      width: tshirtSize.width,
+      height: tshirtSize.height,
+      child: Screenshot(
+        controller: constructorModel.screenshotController,
+        child: BoardWidget(controller: constructorModel.boardController),
+      ),
+    );
+  }
+}
+
+class _BottomSheet extends StatelessWidget {
+  const _BottomSheet();
+
+  @override
+  Widget build(BuildContext context) {
+    final constructorModel = context.read<Constructor>();
+
+    return Padding(
+      padding: const EdgeInsets.all(buttonsSpacing),
+      child: SizedBox(
+        height: MediaQuery.of(context).size.height / 15,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  constructorModel.boardController.add(
+                    TextItem('Text'),
+                  );
+                },
+                icon: const Icon(Icons.text_fields_rounded),
+                label: const Text('Text'),
+              ),
+            ),
+            const SizedBox(width: buttonsSpacing),
+            Expanded(
+              child: ElevatedButton.icon(
+                onPressed: () async {
+                  final result = await showModal<ImageProvider>(
+                    context: context,
+                    dimBackground: true,
+                    child: const ImagePickerWidget(),
+                  );
+                  if (result != null) {
+                    constructorModel.boardController.add(
+                      ImageItem(result),
+                    );
+                  }
+                },
+                icon: const Icon(Icons.image_rounded),
+                label: const Text('Image'),
+              ),
+            ),
+            const SizedBox(width: buttonsSpacing),
+            Expanded(
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  constructorModel.boardController.add(
+                    PaintItem(),
+                  );
+                },
+                icon: const Icon(Icons.edit_rounded),
+                label: const Text('Paint'),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
