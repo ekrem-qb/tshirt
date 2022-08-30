@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:screenshot/screenshot.dart';
@@ -11,7 +10,6 @@ import 'item/image/edit_tools/image_picker/image_picker_widget.dart';
 import 'item/image/image_model.dart';
 import 'item/paint/paint_model.dart';
 import 'item/text/text_model.dart';
-import 'print_hole_clipper.dart';
 
 const buttonsSpacing = 16.0;
 
@@ -68,25 +66,37 @@ class _ConstructorWidget extends StatelessWidget {
                             Expanded(
                               child: ElevatedButton.icon(
                                 onPressed: () async {
-                                  constructorModel.isPrinting = true;
+                                  final image = await constructorModel
+                                      .screenshotController
+                                      .capture(delay: Duration.zero);
 
-                                  WidgetsBinding.instance
-                                      .addPostFrameCallback((_) async {
-                                    final bytes = await constructorModel
-                                        .screenshotController
-                                        .capture(delay: Duration.zero);
-                                    await showCupertinoDialog(
-                                      barrierDismissible: true,
-                                      context: context,
-                                      builder: (_) => Center(
-                                        child: Card(
-                                          child: Image.memory(bytes!),
+                                  final croppedImage = await constructorModel
+                                      .screenshotController
+                                      .captureFromWidget(
+                                    SizedBox(
+                                      width: printSize.width,
+                                      height: printSize.height,
+                                      child: FittedBox(
+                                        fit: BoxFit.none,
+                                        clipBehavior: Clip.hardEdge,
+                                        child: Transform.translate(
+                                          offset: -printOffsetFromCenter,
+                                          child: Image.memory(
+                                            image!,
+                                          ),
                                         ),
                                       ),
-                                    );
+                                    ),
+                                    delay: const Duration(milliseconds: 10),
+                                  );
 
-                                    constructorModel.isPrinting = false;
-                                  });
+                                  showDialog(
+                                    barrierDismissible: true,
+                                    context: context,
+                                    builder: (_) => Center(
+                                      child: Image.memory(croppedImage),
+                                    ),
+                                  );
                                 },
                                 icon: const Icon(Icons.print_rounded),
                                 label: const Text('Print'),
@@ -217,19 +227,11 @@ class _BoardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Constructor? constructorModel;
-    final isPrinting = context.select((Constructor model) {
-      constructorModel ??= model;
-      return model.isPrinting;
-    });
+    final constructorModel = context.read<Constructor>();
 
     return Screenshot(
-      controller: constructorModel!.screenshotController,
-      child: ClipRect(
-        clipper: isPrinting ? PrintHoleClipper() : null,
-        clipBehavior: isPrinting ? Clip.hardEdge : Clip.none,
-        child: BoardWidget(controller: constructorModel!.boardController),
-      ),
+      controller: constructorModel.screenshotController,
+      child: BoardWidget(controller: constructorModel.boardController),
     );
   }
 }

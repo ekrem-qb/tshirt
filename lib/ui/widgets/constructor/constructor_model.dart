@@ -17,13 +17,6 @@ class Constructor extends ChangeNotifier {
   final boardController = StackBoardController();
   final screenshotController = ScreenshotController();
 
-  bool _isPrinting = false;
-  bool get isPrinting => _isPrinting;
-  set isPrinting(bool isPrinting) {
-    _isPrinting = isPrinting;
-    notifyListeners();
-  }
-
   bool _isTshirtFlipped = false;
   bool get isTshirtFlipped => _isTshirtFlipped;
   set isTshirtFlipped(bool isTshirtFlipped) {
