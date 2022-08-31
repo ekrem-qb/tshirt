@@ -43,8 +43,8 @@ class _ConstructorWidget extends StatelessWidget {
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
           title: const Text('Custom Design Constructor'),
-          actions: [
-            _PrintButton(constructorModel: constructorModel),
+          actions: const [
+            _PrintButton(),
           ],
         ),
         body: Stack(
@@ -64,15 +64,12 @@ class _ConstructorWidget extends StatelessWidget {
 }
 
 class _PrintButton extends StatelessWidget {
-  const _PrintButton({
-    Key? key,
-    required this.constructorModel,
-  }) : super(key: key);
-
-  final Constructor constructorModel;
+  const _PrintButton();
 
   @override
   Widget build(BuildContext context) {
+    final constructorModel = context.read<Constructor>();
+
     return ElevatedButton.icon(
       style: ButtonStyle(
         elevation: MaterialStateProperty.all<double>(0),
