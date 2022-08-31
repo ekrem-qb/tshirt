@@ -44,64 +44,83 @@ class _ConstructorWidget extends StatelessWidget {
         appBar: AppBar(
           title: const Text('Custom Design Constructor'),
           actions: [
-            ElevatedButton.icon(
-              style: ButtonStyle(
-                elevation: MaterialStateProperty.all<double>(0),
-              ),
-              onPressed: () async {
-                final image = await constructorModel.screenshotController
-                    .capture(delay: Duration.zero);
-
-                final croppedImage = await constructorModel.screenshotController
-                    .captureFromWidget(
-                  SizedBox(
-                    width: printSize.width,
-                    height: printSize.height,
-                    child: FittedBox(
-                      fit: BoxFit.none,
-                      clipBehavior: Clip.hardEdge,
-                      child: Transform.translate(
-                        offset: -printOffsetFromCenter,
-                        child: Image.memory(
-                          image!,
-                        ),
-                      ),
-                    ),
-                  ),
-                  delay: const Duration(milliseconds: 10),
-                );
-
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) {
-                      return PreviewScreen(
-                        Tshirt(
-                          name: 'Custom Design',
-                          print: croppedImage,
-                        ),
-                        isFlipped: constructorModel.isTshirtFlipped,
-                      );
-                    },
-                  ),
-                );
-              },
-              icon: const Icon(Icons.print_rounded),
-              label: const Text('Print'),
-            ),
+            _PrintButton(constructorModel: constructorModel),
           ],
         ),
         body: Stack(
           fit: StackFit.expand,
           alignment: Alignment.center,
           children: const [
-            _TopSheet(),
             _TshirtWidget(),
+            _TopSheet(),
             _BorderWidget(),
             _BoardWidget(),
           ],
         ),
         bottomSheet: const _BottomSheet(),
       ),
+    );
+  }
+}
+
+class _PrintButton extends StatelessWidget {
+  const _PrintButton({
+    Key? key,
+    required this.constructorModel,
+  }) : super(key: key);
+
+  final Constructor constructorModel;
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton.icon(
+      style: ButtonStyle(
+        elevation: MaterialStateProperty.all<double>(0),
+      ),
+      onPressed: () async {
+        final pixelRatio = MediaQuery.of(context).devicePixelRatio;
+
+        final image = await constructorModel.screenshotController
+            .capture(delay: Duration.zero);
+
+        final croppedImage =
+            await constructorModel.screenshotController.captureFromWidget(
+          SizedBox(
+            width: printSize.width / pixelRatio,
+            height: printSize.height / pixelRatio,
+            child: FittedBox(
+              fit: BoxFit.none,
+              clipBehavior: Clip.hardEdge,
+              child: Transform.translate(
+                offset: -printOffsetFromCenter / pixelRatio,
+                child: SizedBox.fromSize(
+                  size: tshirtSize / pixelRatio,
+                  child: Image.memory(
+                    image!,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          delay: const Duration(milliseconds: 100),
+        );
+
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) {
+              return PreviewScreen(
+                Tshirt(
+                  name: 'Custom Design',
+                  print: croppedImage,
+                ),
+                isFlipped: constructorModel.isTshirtFlipped,
+              );
+            },
+          ),
+        );
+      },
+      icon: const Icon(Icons.print_rounded),
+      label: const Text('Print'),
     );
   }
 }
