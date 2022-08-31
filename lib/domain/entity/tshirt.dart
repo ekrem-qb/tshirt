@@ -9,3 +9,14 @@ class Tshirt {
   final String name;
   final Uint8List print;
 }
+
+enum TshirtSize {
+  S,
+  M,
+  L,
+}
+
+enum TshirtSide {
+  Front,
+  Back,
+}

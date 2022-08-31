@@ -119,6 +119,7 @@ class _TopSheet extends StatelessWidget {
                                     name: 'Custom Design',
                                     print: croppedImage,
                                   ),
+                                  isFlipped: constructorModel.isTshirtFlipped,
                                 );
                               },
                             ),

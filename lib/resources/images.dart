@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 abstract class Images {
   static const AssetImage tshirtFront = AssetImage('images/tshirt_front.png');
