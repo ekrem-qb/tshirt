@@ -36,7 +36,7 @@ class _ConstructorWidget extends StatelessWidget {
 
     return Listener(
       onPointerDown: (_) {
-        constructorModel.boardController.unFocus();
+        constructorModel.boardController.focus();
       },
       behavior: HitTestBehavior.opaque,
       child: Scaffold(
@@ -52,12 +52,34 @@ class _ConstructorWidget extends StatelessWidget {
           alignment: Alignment.center,
           children: const [
             _TshirtWidget(),
-            _TopSheet(),
+            _FlipButton(),
             _BorderWidget(),
             _BoardWidget(),
           ],
         ),
         bottomSheet: const _BottomSheet(),
+      ),
+    );
+  }
+}
+
+class _FlipButton extends StatelessWidget {
+  const _FlipButton();
+
+  @override
+  Widget build(BuildContext context) {
+    final constructorModel = context.read<Constructor>();
+
+    return Align(
+      alignment: Alignment.topLeft,
+      child: Padding(
+        padding: const EdgeInsets.all(buttonsSpacing),
+        child: FloatingActionButton.extended(
+          label: const Text('Flip Side'),
+          icon: const Icon(Icons.rotate_left),
+          onPressed: () => constructorModel.isTshirtFlipped =
+              !constructorModel.isTshirtFlipped,
+        ),
       ),
     );
   }
@@ -118,50 +140,6 @@ class _PrintButton extends StatelessWidget {
       },
       icon: const Icon(Icons.print_rounded),
       label: const Text('Print'),
-    );
-  }
-}
-
-class _TopSheet extends StatelessWidget {
-  const _TopSheet();
-
-  @override
-  Widget build(BuildContext context) {
-    final constructorModel = context.read<Constructor>();
-
-    return Align(
-      alignment: Alignment.topCenter,
-      child: Padding(
-        padding: const EdgeInsets.all(buttonsSpacing),
-        child: SizedBox(
-          height: MediaQuery.of(context).size.height / 15,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Expanded(
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    constructorModel.boardController.clear();
-                  },
-                  icon: const Icon(Icons.delete_rounded),
-                  label: const Text('Clear'),
-                ),
-              ),
-              const SizedBox(width: buttonsSpacing),
-              Expanded(
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    constructorModel.isTshirtFlipped =
-                        !constructorModel.isTshirtFlipped;
-                  },
-                  icon: const Icon(Icons.flip),
-                  label: const Text('Flip'),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }
@@ -234,53 +212,171 @@ class _BottomSheet extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(buttonsSpacing),
       child: SizedBox(
-        height: MediaQuery.of(context).size.height / 15,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+        height: 150,
+        child: Column(
           children: [
             Expanded(
-              child: ElevatedButton.icon(
-                onPressed: () {
-                  constructorModel.boardController.add(
-                    TextItem('Text'),
-                  );
-                },
-                icon: const Icon(Icons.text_fields_rounded),
-                label: const Text('Text'),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        constructorModel.boardController.add(
+                          TextItem('Text'),
+                        );
+                      },
+                      icon: const Icon(Icons.text_fields_rounded),
+                      label: const Text('Text'),
+                    ),
+                  ),
+                  const SizedBox(width: buttonsSpacing),
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () async {
+                        final result = await showModal<ImageProvider>(
+                          context: context,
+                          dimBackground: true,
+                          child: const ImagePickerWidget(),
+                        );
+                        if (result != null) {
+                          constructorModel.boardController.add(
+                            ImageItem(result),
+                          );
+                        }
+                      },
+                      icon: const Icon(Icons.image_rounded),
+                      label: const Text('Image'),
+                    ),
+                  ),
+                  const SizedBox(width: buttonsSpacing),
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        constructorModel.boardController.add(
+                          PaintItem(),
+                        );
+                      },
+                      icon: const Icon(Icons.edit_rounded),
+                      label: const Text('Paint'),
+                    ),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(width: buttonsSpacing),
+            const SizedBox(height: buttonsSpacing),
             Expanded(
-              child: ElevatedButton.icon(
-                onPressed: () async {
-                  final result = await showModal<ImageProvider>(
-                    context: context,
-                    dimBackground: true,
-                    child: const ImagePickerWidget(),
-                  );
-                  if (result != null) {
-                    constructorModel.boardController.add(
-                      ImageItem(result),
-                    );
-                  }
-                },
-                icon: const Icon(Icons.image_rounded),
-                label: const Text('Image'),
-              ),
-            ),
-            const SizedBox(width: buttonsSpacing),
-            Expanded(
-              child: ElevatedButton.icon(
-                onPressed: () {
-                  constructorModel.boardController.add(
-                    PaintItem(),
-                  );
-                },
-                icon: const Icon(Icons.edit_rounded),
-                label: const Text('Paint'),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        constructorModel.boardController.clear();
+                      },
+                      icon: const Icon(Icons.delete_rounded),
+                      label: const Text('Clear'),
+                    ),
+                  ),
+                  const SizedBox(width: buttonsSpacing),
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        showModal(
+                          context: context,
+                          child: _LayersListWidget(
+                            boardController: constructorModel.boardController,
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.layers_rounded),
+                      label: const Text('Layers'),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _LayersListWidget extends StatefulWidget {
+  const _LayersListWidget({required this.boardController});
+
+  final StackBoardController boardController;
+
+  @override
+  State<_LayersListWidget> createState() => _LayersListWidgetState();
+}
+
+class _LayersListWidgetState extends State<_LayersListWidget> {
+  @override
+  Widget build(BuildContext context) {
+    return ConstrainedBox(
+      constraints: const BoxConstraints(
+        maxHeight: 500,
+        minHeight: 180,
+      ),
+      child: Center(
+        heightFactor: 1,
+        child: ReorderableListView.builder(
+          shrinkWrap: true,
+          buildDefaultDragHandles: false,
+          onReorder: (oldIndex, newIndex) {
+            if (oldIndex < newIndex) {
+              newIndex -= 1;
+            }
+            final reversedOldIndex =
+                (widget.boardController.items.length - 1) - oldIndex;
+            final reversedNewIndex =
+                (widget.boardController.items.length - 1) - newIndex;
+            widget.boardController
+                .reorderItem(reversedOldIndex, reversedNewIndex);
+            setState(() {});
+          },
+          itemCount: widget.boardController.items.length,
+          itemBuilder: (context, index) {
+            final reversedIndex =
+                (widget.boardController.items.length - 1) - index;
+            final item = widget.boardController.items[reversedIndex];
+
+            return ReorderableDelayedDragStartListener(
+              key: Key('$index'),
+              index: index,
+              child: ListTile(
+                leading: Icon(
+                  item is ImageItem
+                      ? Icons.image_rounded
+                      : item is TextItem
+                          ? Icons.text_fields_rounded
+                          : item is PaintItem
+                              ? Icons.edit_rounded
+                              : Icons.layers_rounded,
+                ),
+                title: Text(
+                  item is ImageItem
+                      ? 'Image'
+                      : item is TextItem
+                          ? item.text
+                          : item is PaintItem
+                              ? 'Paint'
+                              : 'Layer',
+                ),
+                trailing: IconButton(
+                  splashColor: Colors.red,
+                  onPressed: () {
+                    widget.boardController.remove(item.id);
+                    setState(() {});
+                  },
+                  icon: const Icon(Icons.close_rounded),
+                ),
+                onTap: () => widget.boardController.focus(item.id),
+              ),
+            );
+          },
         ),
       ),
     );

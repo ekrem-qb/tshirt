@@ -20,7 +20,6 @@ class BoardWidget extends StatefulWidget {
     this.controller,
     this.background,
     this.customBuilder,
-    this.tapItemToMoveToTop = true,
     this.enableCenterGuides = true,
   });
 
@@ -37,9 +36,6 @@ class BoardWidget extends StatefulWidget {
 
   /// 自定义类型控件构建器
   final Widget? Function(Item item)? customBuilder;
-
-  /// 点击item移至顶层
-  final bool tapItemToMoveToTop;
 }
 
 class BoardWidgetState extends State<BoardWidget> with SafeState<BoardWidget> {
@@ -82,25 +78,12 @@ class BoardWidgetState extends State<BoardWidget> with SafeState<BoardWidget> {
 
     _lastId++;
 
-    _unFocus(_children.last.id);
+    _focus(_children.last.id);
   }
 
   /// 移除指定id item
   void _remove(int? id) {
     _children.removeWhere((Item b) => b.id == id);
-    safeSetState(() {});
-  }
-
-  /// 将item移至顶层
-  void _moveItemToTop(int? id) {
-    if (id == null) return;
-
-    final Item item = _children.firstWhere((Item i) => i.id == id);
-    _children.removeWhere((Item i) => i.id == id);
-    _children.add(item);
-
-    _unFocus(id);
-
     safeSetState(() {});
   }
 
@@ -112,7 +95,7 @@ class BoardWidgetState extends State<BoardWidget> with SafeState<BoardWidget> {
   }
 
   /// 取消全部选中
-  void _unFocus(int? id) {
+  void _focus(int? id) {
     if (_focusedItemId == null) {
       _focusedItemId = id;
       _operationState = OperationState.complete;
@@ -150,7 +133,7 @@ class BoardWidgetState extends State<BoardWidget> with SafeState<BoardWidget> {
     Widget child = ItemWidget(
       key: _getKey(item.id),
       onDelete: () => _onDelete(item),
-      onPointerDown: () => _moveItemToTop(item.id),
+      onPointerDown: () => _focus(item.id),
       operationState:
           _focusedItemId == item.id ? OperationState.idle : _operationState,
       child: Container(
@@ -167,7 +150,7 @@ class BoardWidgetState extends State<BoardWidget> with SafeState<BoardWidget> {
         key: _getKey(item.id),
         text: item.text,
         onDelete: () => _onDelete(item),
-        onPointerDown: () => _moveItemToTop(item.id),
+        onPointerDown: () => _focus(item.id),
         operationState:
             _focusedItemId == item.id ? OperationState.idle : _operationState,
       );
@@ -175,7 +158,7 @@ class BoardWidgetState extends State<BoardWidget> with SafeState<BoardWidget> {
       child = PaintItemWidget(
         key: _getKey(item.id),
         onDelete: () => _onDelete(item),
-        onPointerDown: () => _moveItemToTop(item.id),
+        onPointerDown: () => _focus(item.id),
         operationState:
             _focusedItemId == item.id ? OperationState.idle : _operationState,
       );
@@ -184,7 +167,7 @@ class BoardWidgetState extends State<BoardWidget> with SafeState<BoardWidget> {
         key: _getKey(item.id),
         image: item.image,
         onDelete: () => _onDelete(item),
-        onPointerDown: () => _moveItemToTop(item.id),
+        onPointerDown: () => _focus(item.id),
         operationState:
             _focusedItemId == item.id ? OperationState.idle : _operationState,
       );
@@ -192,7 +175,7 @@ class BoardWidgetState extends State<BoardWidget> with SafeState<BoardWidget> {
       child = ItemWidget(
         key: _getKey(item.id),
         onDelete: () => _onDelete(item),
-        onPointerDown: () => _moveItemToTop(item.id),
+        onPointerDown: () => _focus(item.id),
         operationState:
             _focusedItemId == item.id ? OperationState.idle : _operationState,
         child: item.child,
@@ -236,11 +219,6 @@ class StackBoardController {
     _stackBoardState?._remove(id);
   }
 
-  void moveItemToTop(int? id) {
-    _done();
-    _stackBoardState?._moveItemToTop(id);
-  }
-
   /// 清理全部
   void clear() {
     _done();
@@ -258,8 +236,8 @@ class StackBoardController {
     _stackBoardState = null;
   }
 
-  void unFocus([int? id]) {
-    _stackBoardState?._unFocus(id);
+  void focus([int? id]) {
+    _stackBoardState?._focus(id);
   }
 
   void toggleCenterGuides({bool? newVerticalState, bool? newHorizontalState}) =>
@@ -267,4 +245,15 @@ class StackBoardController {
         newVerticalState: newVerticalState,
         newHorizontalState: newHorizontalState,
       );
+
+  List<Item> get items => _stackBoardState!._children;
+
+  void reorderItem(int oldIndex, int newIndex) {
+    final item = _stackBoardState?._children[oldIndex];
+    if (item != null) {
+      _stackBoardState?._children.removeAt(oldIndex);
+      _stackBoardState?._children.insert(newIndex, item);
+      _stackBoardState?.safeSetState(() => {});
+    }
+  }
 }
