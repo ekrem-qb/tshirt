@@ -6,14 +6,19 @@ import 'package:screenshot/screenshot.dart';
 import '../../../domain/entity/tshirt.dart';
 import '../../../resources/images.dart';
 import '../../theme.dart';
+import '../library/center_guides.dart';
 import '../library/modal_sheet.dart';
 import '../preview/preview_widget.dart';
-import 'board/board_widget.dart';
 import 'constructor_model.dart';
 import 'item/image/edit_tools/image_picker/image_picker_widget.dart';
 import 'item/image/image_model.dart';
+import 'item/image/image_widget.dart';
+import 'item/item_model.dart';
+import 'item/item_widget.dart';
 import 'item/paint/paint_model.dart';
+import 'item/paint/paint_widget.dart';
 import 'item/text/text_model.dart';
+import 'item/text/text_widget.dart';
 
 class ConstructorScreen extends StatelessWidget {
   const ConstructorScreen({super.key});
@@ -36,7 +41,7 @@ class _ConstructorWidget extends StatelessWidget {
 
     return Listener(
       onPointerDown: (_) {
-        constructorModel.boardController.focus();
+        constructorModel.unfocus();
       },
       behavior: HitTestBehavior.opaque,
       child: Scaffold(
@@ -167,17 +172,92 @@ class _BoardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final constructorModel = context.read<Constructor>();
+    final constructorModel = context.watch<Constructor>();
 
-    return Positioned(
+    final build = Positioned(
       width: tshirtSize.width,
       height: tshirtSize.height,
       child: Screenshot(
         controller: constructorModel.screenshotController,
-        child: BoardWidget(controller: constructorModel.boardController),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            ...constructorModel.items
+                .map((Item box) => _buildItem(box, constructorModel))
+                .toList(),
+            CenterGuides(
+              controller: constructorModel.centerGuidesController,
+            ),
+          ],
+        ),
       ),
     );
+
+    constructorModel.focusedItemId = null;
+
+    return build;
   }
+}
+
+Widget _buildItem(Item item, Constructor constructorModel) {
+  Widget child = ItemWidget(
+    key: Key('${item.id}'),
+    onDelete: () => constructorModel.onDelete(item),
+    onPointerDown: () => constructorModel.focus(item.id),
+    operationState: constructorModel.focusedItemId == item.id
+        ? OperationState.idle
+        : constructorModel.operationState,
+    child: Container(
+      width: 150,
+      height: 150,
+      alignment: Alignment.center,
+      child:
+          const Text('Unknown item type, please use customBuilder to build it'),
+    ),
+  );
+
+  if (item is TextItem) {
+    child = TextItemWidget(
+      key: Key('${item.id}'),
+      text: item.text,
+      onDelete: () => constructorModel.onDelete(item),
+      onPointerDown: () => constructorModel.focus(item.id),
+      operationState: constructorModel.focusedItemId == item.id
+          ? OperationState.idle
+          : constructorModel.operationState,
+    );
+  } else if (item is PaintItem) {
+    child = PaintItemWidget(
+      key: Key('${item.id}'),
+      onDelete: () => constructorModel.onDelete(item),
+      onPointerDown: () => constructorModel.focus(item.id),
+      operationState: constructorModel.focusedItemId == item.id
+          ? OperationState.idle
+          : constructorModel.operationState,
+    );
+  } else if (item is ImageItem) {
+    child = ImageItemWidget(
+      key: Key('${item.id}'),
+      image: item.image,
+      onDelete: () => constructorModel.onDelete(item),
+      onPointerDown: () => constructorModel.focus(item.id),
+      operationState: constructorModel.focusedItemId == item.id
+          ? OperationState.idle
+          : constructorModel.operationState,
+    );
+  } else {
+    child = ItemWidget(
+      key: Key('${item.id}'),
+      onDelete: () => constructorModel.onDelete(item),
+      onPointerDown: () => constructorModel.focus(item.id),
+      operationState: constructorModel.focusedItemId == item.id
+          ? OperationState.idle
+          : constructorModel.operationState,
+      child: item.child,
+    );
+  }
+
+  return child;
 }
 
 class _BorderWidget extends StatelessWidget {
@@ -222,7 +302,7 @@ class _BottomSheet extends StatelessWidget {
                   Expanded(
                     child: ElevatedButton.icon(
                       onPressed: () {
-                        constructorModel.boardController.add(
+                        constructorModel.add(
                           TextItem('Text'),
                         );
                       },
@@ -240,7 +320,7 @@ class _BottomSheet extends StatelessWidget {
                           child: const ImagePickerWidget(),
                         );
                         if (result != null) {
-                          constructorModel.boardController.add(
+                          constructorModel.add(
                             ImageItem(result),
                           );
                         }
@@ -253,7 +333,7 @@ class _BottomSheet extends StatelessWidget {
                   Expanded(
                     child: ElevatedButton.icon(
                       onPressed: () {
-                        constructorModel.boardController.add(
+                        constructorModel.add(
                           PaintItem(),
                         );
                       },
@@ -272,7 +352,7 @@ class _BottomSheet extends StatelessWidget {
                   Expanded(
                     child: ElevatedButton.icon(
                       onPressed: () {
-                        constructorModel.boardController.clear();
+                        constructorModel.clear();
                       },
                       icon: const Icon(Icons.delete_rounded),
                       label: const Text('Clear'),
@@ -285,7 +365,7 @@ class _BottomSheet extends StatelessWidget {
                         showModal(
                           context: context,
                           child: _LayersListWidget(
-                            boardController: constructorModel.boardController,
+                            constructorModel: constructorModel,
                           ),
                         );
                       },
@@ -304,9 +384,9 @@ class _BottomSheet extends StatelessWidget {
 }
 
 class _LayersListWidget extends StatefulWidget {
-  const _LayersListWidget({required this.boardController});
+  const _LayersListWidget({required this.constructorModel});
 
-  final StackBoardController boardController;
+  final Constructor constructorModel;
 
   @override
   State<_LayersListWidget> createState() => _LayersListWidgetState();
@@ -330,18 +410,18 @@ class _LayersListWidgetState extends State<_LayersListWidget> {
               newIndex -= 1;
             }
             final reversedOldIndex =
-                (widget.boardController.items.length - 1) - oldIndex;
+                (widget.constructorModel.items.length - 1) - oldIndex;
             final reversedNewIndex =
-                (widget.boardController.items.length - 1) - newIndex;
-            widget.boardController
+                (widget.constructorModel.items.length - 1) - newIndex;
+            widget.constructorModel
                 .reorderItem(reversedOldIndex, reversedNewIndex);
             setState(() {});
           },
-          itemCount: widget.boardController.items.length,
+          itemCount: widget.constructorModel.items.length,
           itemBuilder: (context, index) {
             final reversedIndex =
-                (widget.boardController.items.length - 1) - index;
-            final item = widget.boardController.items[reversedIndex];
+                (widget.constructorModel.items.length - 1) - index;
+            final item = widget.constructorModel.items[reversedIndex];
 
             return ReorderableDelayedDragStartListener(
               key: Key('$index'),
@@ -368,12 +448,12 @@ class _LayersListWidgetState extends State<_LayersListWidget> {
                 trailing: IconButton(
                   splashColor: Colors.red,
                   onPressed: () {
-                    widget.boardController.remove(item.id);
+                    widget.constructorModel.remove(item.id);
                     setState(() {});
                   },
                   icon: const Icon(Icons.close_rounded),
                 ),
-                onTap: () => widget.boardController.focus(item.id),
+                onTap: () => widget.constructorModel.focus(item.id),
               ),
             );
           },

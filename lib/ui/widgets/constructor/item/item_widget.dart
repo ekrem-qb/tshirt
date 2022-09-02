@@ -2,10 +2,11 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_drawing_board/flutter_drawing_board.dart';
+import 'package:provider/provider.dart';
 
 import '../../../theme.dart';
 import '../../library/ffloat.dart';
-import '../board/board_widget.dart';
+import '../constructor_model.dart';
 import 'item_model.dart';
 
 /// 配置项
@@ -141,7 +142,7 @@ class ItemWidgetState extends State<ItemWidget> with SafeState<ItemWidget> {
   late double rotatingStartAngle;
   late Size currentUnfittedSize;
 
-  late StackBoardController? _boardController;
+  late Constructor? _constructorModel;
   final FFloatController _fFloatController = FFloatController();
 
   @override
@@ -158,8 +159,7 @@ class ItemWidgetState extends State<ItemWidget> with SafeState<ItemWidget> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _recalculateCenter();
     });
-    _boardController =
-        context.findAncestorWidgetOfExactType<BoardWidget>()?.controller;
+    _constructorModel = context.read<Constructor>();
     widget.controller?._itemState = this;
   }
 
@@ -238,15 +238,15 @@ class ItemWidgetState extends State<ItemWidget> with SafeState<ItemWidget> {
 
     if ((newOffset.dx - center.dx).abs() < moveSnappingTreshold) {
       newOffset = Offset(center.dx, newOffset.dy);
-      _boardController?.toggleCenterGuides(newVerticalState: true);
+      _constructorModel?.toggleCenterGuides(newVerticalState: true);
     } else {
-      _boardController?.toggleCenterGuides(newVerticalState: false);
+      _constructorModel?.toggleCenterGuides(newVerticalState: false);
     }
     if ((newOffset.dy - center.dy).abs() < moveSnappingTreshold) {
       newOffset = Offset(newOffset.dx, center.dy);
-      _boardController?.toggleCenterGuides(newHorizontalState: true);
+      _constructorModel?.toggleCenterGuides(newHorizontalState: true);
     } else {
-      _boardController?.toggleCenterGuides(newHorizontalState: false);
+      _constructorModel?.toggleCenterGuides(newHorizontalState: false);
     }
 
     //移动拦截
@@ -408,7 +408,7 @@ class ItemWidgetState extends State<ItemWidget> with SafeState<ItemWidget> {
             children: [
               ShaderMask(
                 blendMode: BlendMode.dstIn,
-                shaderCallback: (_) => _boardController!.printMaskShader,
+                shaderCallback: (_) => _constructorModel!.printMaskShader,
                 child: Stack(
                   children: [
                     Positioned(
@@ -424,7 +424,7 @@ class ItemWidgetState extends State<ItemWidget> with SafeState<ItemWidget> {
                           onPanUpdate: _moveHandle,
                           onPanEnd: (_) {
                             _changeToIdle();
-                            _boardController?.toggleCenterGuides(
+                            _constructorModel?.toggleCenterGuides(
                               newVerticalState: false,
                               newHorizontalState: false,
                             );
