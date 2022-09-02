@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 class CaseStyle {
   static const Color borderColor = Colors.grey;
-  static const double borderWidth = 1;
+  static const double borderWidth = 2;
   static const Color iconColor = Colors.white;
-  static const double iconSize = 24;
+  static const double iconSize = 36;
 }
 
 enum OperationState {

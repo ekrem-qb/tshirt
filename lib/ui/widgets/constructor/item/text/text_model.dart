@@ -35,7 +35,7 @@ class TextItem extends Item with ChangeNotifier {
 
   String fontFamily = 'Roboto';
 
-  TextStyle _style = GoogleFonts.roboto();
+  TextStyle _style = GoogleFonts.roboto(fontSize: 48);
 
   TextStyle get style => _style;
 
