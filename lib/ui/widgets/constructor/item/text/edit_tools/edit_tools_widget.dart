@@ -1,7 +1,7 @@
-import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../library/color_picker.dart';
 import '../../../../library/modal_sheet.dart';
 import '../text_model.dart';
 import 'edit_tools_model.dart';
@@ -67,27 +67,10 @@ class _ColorPickWidget extends StatelessWidget {
       onPressed: () {
         showModal(
           context: context,
-          child: ConstrainedBox(
-            constraints: const BoxConstraints.tightFor(
-              height: 432,
-            ),
-            child: ColorPicker(
-              hasBorder: true,
-              wheelHasBorder: true,
-              colorCodeHasColor: true,
-              enableOpacity: true,
-              subheading: const Text('Color shade'),
-              wheelSubheading: const Text('Color shade'),
-              opacitySubheading: const Text('Opacity'),
-              pickersEnabled: const {
-                ColorPickerType.primary: true,
-                ColorPickerType.accent: false,
-                ColorPickerType.wheel: true,
-              },
-              color: textModel.style.color ?? Colors.grey.shade900,
-              onColorChanged: (newColor) =>
-                  textModel.style = textModel.style.copyWith(color: newColor),
-            ),
+          child: ColorPickerWidget(
+            color: textModel.style.color ?? Colors.grey.shade900,
+            onColorChanged: (newColor) =>
+                textModel.style = textModel.style.copyWith(color: newColor),
           ),
         );
       },

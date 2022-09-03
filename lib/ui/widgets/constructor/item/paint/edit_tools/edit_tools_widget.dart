@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_drawing_board/flutter_drawing_board.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../library/color_picker.dart';
+import '../../../../library/modal_sheet.dart';
 import '../../item_model.dart';
 import '../paint_model.dart';
 import 'brush_size_indicator_model.dart';
@@ -137,17 +139,16 @@ class _BuildToolsWidget extends StatelessWidget {
             builder: (_, DrawConfig? drawConfig, ___) {
               return TextButton(
                 onPressed: () async {
-                  final Color? newColor = await showModalBottomSheet<Color?>(
-                      context: context,
-                      builder: (_) => ColorPic(
-                          nowColor: paintModel.drawingController.getColor));
-                  if (newColor == null) {
-                    return;
-                  }
-
-                  if (newColor != paintModel.drawingController.getColor) {
-                    paintModel.drawingController.setColor = newColor;
-                  }
+                  showModal(
+                    context: context,
+                    dimBackground: true,
+                    child: ColorPickerWidget(
+                      color:
+                          paintModel.drawingController.getColor ?? Colors.red,
+                      onColorChanged: (newColor) =>
+                          paintModel.drawingController.setColor = newColor,
+                    ),
+                  );
                 },
                 style: TextButton.styleFrom(
                   padding: EdgeInsets.zero,
