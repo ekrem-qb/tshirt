@@ -25,8 +25,10 @@ class Constructor extends ChangeNotifier {
   int? _focusedItemId;
   int? get focusedItemId => _focusedItemId;
   set focusedItemId(int? focusedItemId) {
-    _focusedItemId = focusedItemId;
-    notifyListeners();
+    if (_focusedItemId != focusedItemId) {
+      _focusedItemId = focusedItemId;
+      notifyListeners();
+    }
   }
 
   List<Item> items = [];
