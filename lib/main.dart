@@ -1,9 +1,10 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'domain/api/firebase.dart';
 import 'ui/widgets/constructor/constructor_widget.dart';
 
-void main() {
-  WidgetsFlutterBinding.ensureInitialized();
+void main() async {
+  await setupFirebase();
   runApp(
     MaterialApp(
       debugShowCheckedModeBanner: false,

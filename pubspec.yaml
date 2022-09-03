@@ -29,6 +29,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flex_color_picker:
+    git: https://github.com/ekrem-qb/flex_color_picker.git
   camera: ^0.10.0
   camera_windows: ^0.2.1+1
   dotted_border: ^2.0.0+2
@@ -39,8 +41,12 @@ dependencies:
   meta: ^1.7.0
   provider: ^6.0.3
   screenshot: ^1.2.3
-  flex_color_picker:
-    git: https://github.com/ekrem-qb/flex_color_picker.git
+  firebase_dart: ^1.0.11
+  path_provider: ^2.0.11
+  platform_info: ^3.2.0
+  package_info_plus: ^1.4.3+1
+  url_launcher: ^6.1.5
+  hive: ^2.2.3
 
 
   # The following adds the Cupertino Icons font to your application.
