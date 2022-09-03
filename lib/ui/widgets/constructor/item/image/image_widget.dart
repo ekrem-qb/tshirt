@@ -59,7 +59,6 @@ class _ItemWidget extends StatelessWidget {
       controller: imageModel!.itemController,
       isEditable: true,
       onPointerDown: onPointerDown,
-      tapToEdit: imageModel!.tapToEdit,
       onDelete: onDelete,
       onSizeChanged: imageModel!.onSizeChanged,
       onResizeDone: imageModel!.onResizeDone,

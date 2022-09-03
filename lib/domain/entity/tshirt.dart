@@ -1,4 +1,4 @@
-import 'dart:typed_data';
+import 'package:flutter/material.dart';
 
 class Tshirt {
   Tshirt({
@@ -7,7 +7,7 @@ class Tshirt {
   });
 
   final String name;
-  final Uint8List print;
+  final ImageProvider print;
 }
 
 enum TshirtSize {

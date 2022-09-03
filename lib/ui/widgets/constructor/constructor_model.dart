@@ -22,20 +22,16 @@ class Constructor extends ChangeNotifier {
     notifyListeners();
   }
 
-  bool _isEmpty = true;
-  bool get isEmpty => _isEmpty;
-  set isEmpty(bool isEmpty) {
-    _isEmpty = isEmpty;
+  int? _focusedItemId;
+  int? get focusedItemId => _focusedItemId;
+  set focusedItemId(int? focusedItemId) {
+    _focusedItemId = focusedItemId;
     notifyListeners();
   }
 
   List<Item> items = [];
 
-  int? focusedItemId;
-
-  int lastId = 0;
-
-  OperationState? operationState;
+  bool _ignoreUnfocus = false;
 
   final CenterGuidesController centerGuidesController =
       CenterGuidesController();
@@ -44,10 +40,9 @@ class Constructor extends ChangeNotifier {
     if (items.contains(item)) throw 'duplicate id';
 
     items.add(item.copyWith(
-      id: item.id ?? lastId,
+      id: item.id ?? items.length,
     ));
-
-    lastId++;
+    notifyListeners();
 
     focus(items.last.id);
   }
@@ -59,25 +54,25 @@ class Constructor extends ChangeNotifier {
 
   void clear() {
     items.clear();
-    lastId = 0;
     notifyListeners();
   }
 
   void focus(int? id) {
-    if (focusedItemId == null) {
-      focusedItemId = id;
-      operationState = OperationState.complete;
-      notifyListeners();
-    }
+    focusedItemId = id;
+    _ignoreUnfocus = true;
   }
 
   void unfocus() {
-    notifyListeners();
+    if (!_ignoreUnfocus) {
+      focusedItemId = null;
+    } else {
+      _ignoreUnfocus = false;
+    }
   }
 
-  Future<void> onDelete(Item box) async {
-    final bool delete = (await box.onDelete?.call()) ?? true;
-    if (delete) remove(box.id);
+  Future<void> onDelete(Item item) async {
+    final bool delete = (await item.onDelete?.call()) ?? true;
+    if (delete) remove(item.id);
   }
 
   void toggleCenterGuides({bool? newVerticalState, bool? newHorizontalState}) =>

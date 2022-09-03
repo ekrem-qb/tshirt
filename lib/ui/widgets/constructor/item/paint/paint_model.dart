@@ -7,10 +7,8 @@ class PaintItem extends Item with ChangeNotifier {
   PaintItem({
     super.id,
     super.onDelete,
-    bool? tapToEdit,
   }) : super(
           child: const SizedBox(width: 260, height: 260),
-          tapToEdit: tapToEdit ?? false,
         );
 
   @override
@@ -19,12 +17,10 @@ class PaintItem extends Item with ChangeNotifier {
     Widget? child,
     Function(bool)? onEdit,
     Future<bool> Function()? onDelete,
-    bool? tapToEdit,
   }) {
     return PaintItem(
       id: id ?? this.id,
       onDelete: onDelete ?? this.onDelete,
-      tapToEdit: tapToEdit ?? this.tapToEdit,
     );
   }
 

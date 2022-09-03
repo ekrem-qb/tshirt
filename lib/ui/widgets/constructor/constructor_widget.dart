@@ -135,7 +135,7 @@ class _PrintButton extends StatelessWidget {
               return PreviewScreen(
                 Tshirt(
                   name: 'Custom Design',
-                  print: croppedImage,
+                  print: MemoryImage(croppedImage),
                 ),
                 isFlipped: constructorModel.isTshirtFlipped,
               );
@@ -174,90 +174,71 @@ class _BoardWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final constructorModel = context.watch<Constructor>();
 
-    final build = Positioned(
+    return Positioned(
       width: tshirtSize.width,
       height: tshirtSize.height,
       child: Screenshot(
         controller: constructorModel.screenshotController,
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            ...constructorModel.items
-                .map((Item box) => _buildItem(box, constructorModel))
-                .toList(),
-            CenterGuides(
-              controller: constructorModel.centerGuidesController,
-            ),
-          ],
+        child: ClipRect(
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              ...constructorModel.items
+                  .map((Item item) => _buildItem(item, constructorModel))
+                  .toList(),
+              CenterGuides(
+                controller: constructorModel.centerGuidesController,
+              ),
+            ],
+          ),
         ),
       ),
     );
-
-    constructorModel.focusedItemId = null;
-
-    return build;
   }
 }
 
 Widget _buildItem(Item item, Constructor constructorModel) {
-  Widget child = ItemWidget(
-    key: Key('${item.id}'),
-    onDelete: () => constructorModel.onDelete(item),
-    onPointerDown: () => constructorModel.focus(item.id),
-    operationState: constructorModel.focusedItemId == item.id
-        ? OperationState.idle
-        : constructorModel.operationState,
-    child: Container(
-      width: 150,
-      height: 150,
-      alignment: Alignment.center,
-      child:
-          const Text('Unknown item type, please use customBuilder to build it'),
-    ),
-  );
-
   if (item is TextItem) {
-    child = TextItemWidget(
+    return TextItemWidget(
       key: Key('${item.id}'),
       text: item.text,
       onDelete: () => constructorModel.onDelete(item),
       onPointerDown: () => constructorModel.focus(item.id),
       operationState: constructorModel.focusedItemId == item.id
           ? OperationState.idle
-          : constructorModel.operationState,
+          : OperationState.complete,
     );
-  } else if (item is PaintItem) {
-    child = PaintItemWidget(
+  }
+  if (item is PaintItem) {
+    return PaintItemWidget(
       key: Key('${item.id}'),
       onDelete: () => constructorModel.onDelete(item),
       onPointerDown: () => constructorModel.focus(item.id),
       operationState: constructorModel.focusedItemId == item.id
           ? OperationState.idle
-          : constructorModel.operationState,
+          : OperationState.complete,
     );
-  } else if (item is ImageItem) {
-    child = ImageItemWidget(
+  }
+  if (item is ImageItem) {
+    return ImageItemWidget(
       key: Key('${item.id}'),
       image: item.image,
       onDelete: () => constructorModel.onDelete(item),
       onPointerDown: () => constructorModel.focus(item.id),
       operationState: constructorModel.focusedItemId == item.id
           ? OperationState.idle
-          : constructorModel.operationState,
-    );
-  } else {
-    child = ItemWidget(
-      key: Key('${item.id}'),
-      onDelete: () => constructorModel.onDelete(item),
-      onPointerDown: () => constructorModel.focus(item.id),
-      operationState: constructorModel.focusedItemId == item.id
-          ? OperationState.idle
-          : constructorModel.operationState,
-      child: item.child,
+          : OperationState.complete,
     );
   }
-
-  return child;
+  return ItemWidget(
+    key: Key('${item.id}'),
+    onDelete: () => constructorModel.onDelete(item),
+    onPointerDown: () => constructorModel.focus(item.id),
+    operationState: constructorModel.focusedItemId == item.id
+        ? OperationState.idle
+        : OperationState.complete,
+    child: item.child,
+  );
 }
 
 class _BorderWidget extends StatelessWidget {
@@ -402,62 +383,64 @@ class _LayersListWidgetState extends State<_LayersListWidget> {
       ),
       child: Center(
         heightFactor: 1,
-        child: ReorderableListView.builder(
-          shrinkWrap: true,
-          buildDefaultDragHandles: false,
-          onReorder: (oldIndex, newIndex) {
-            if (oldIndex < newIndex) {
-              newIndex -= 1;
-            }
-            final reversedOldIndex =
-                (widget.constructorModel.items.length - 1) - oldIndex;
-            final reversedNewIndex =
-                (widget.constructorModel.items.length - 1) - newIndex;
-            widget.constructorModel
-                .reorderItem(reversedOldIndex, reversedNewIndex);
-            setState(() {});
-          },
-          itemCount: widget.constructorModel.items.length,
-          itemBuilder: (context, index) {
-            final reversedIndex =
-                (widget.constructorModel.items.length - 1) - index;
-            final item = widget.constructorModel.items[reversedIndex];
+        child: widget.constructorModel.items.isNotEmpty
+            ? ReorderableListView.builder(
+                shrinkWrap: true,
+                buildDefaultDragHandles: false,
+                onReorder: (oldIndex, newIndex) {
+                  if (oldIndex < newIndex) {
+                    newIndex -= 1;
+                  }
+                  final reversedOldIndex =
+                      (widget.constructorModel.items.length - 1) - oldIndex;
+                  final reversedNewIndex =
+                      (widget.constructorModel.items.length - 1) - newIndex;
+                  widget.constructorModel
+                      .reorderItem(reversedOldIndex, reversedNewIndex);
+                  setState(() {});
+                },
+                itemCount: widget.constructorModel.items.length,
+                itemBuilder: (context, index) {
+                  final reversedIndex =
+                      (widget.constructorModel.items.length - 1) - index;
+                  final item = widget.constructorModel.items[reversedIndex];
 
-            return ReorderableDelayedDragStartListener(
-              key: Key('$index'),
-              index: index,
-              child: ListTile(
-                leading: Icon(
-                  item is ImageItem
-                      ? Icons.image_rounded
-                      : item is TextItem
-                          ? Icons.text_fields_rounded
-                          : item is PaintItem
-                              ? Icons.edit_rounded
-                              : Icons.layers_rounded,
-                ),
-                title: Text(
-                  item is ImageItem
-                      ? 'Image'
-                      : item is TextItem
-                          ? item.text
-                          : item is PaintItem
-                              ? 'Paint'
-                              : 'Layer',
-                ),
-                trailing: IconButton(
-                  splashColor: Colors.red,
-                  onPressed: () {
-                    widget.constructorModel.remove(item.id);
-                    setState(() {});
-                  },
-                  icon: const Icon(Icons.close_rounded),
-                ),
-                onTap: () => widget.constructorModel.focus(item.id),
-              ),
-            );
-          },
-        ),
+                  return ReorderableDelayedDragStartListener(
+                    key: Key('$index'),
+                    index: index,
+                    child: ListTile(
+                      leading: Icon(
+                        item is ImageItem
+                            ? Icons.image_rounded
+                            : item is TextItem
+                                ? Icons.text_fields_rounded
+                                : item is PaintItem
+                                    ? Icons.edit_rounded
+                                    : Icons.layers_rounded,
+                      ),
+                      title: Text(
+                        item is ImageItem
+                            ? 'Image'
+                            : item is TextItem
+                                ? item.text
+                                : item is PaintItem
+                                    ? 'Paint'
+                                    : 'Layer',
+                      ),
+                      trailing: IconButton(
+                        splashColor: Colors.red,
+                        onPressed: () {
+                          widget.constructorModel.remove(item.id);
+                          setState(() {});
+                        },
+                        icon: const Icon(Icons.close_rounded),
+                      ),
+                      onTap: () => widget.constructorModel.focus(item.id),
+                    ),
+                  );
+                },
+              )
+            : const Text('Add some text, image or paint layer'),
       ),
     );
   }

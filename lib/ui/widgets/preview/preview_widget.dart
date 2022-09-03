@@ -31,7 +31,7 @@ class PreviewScreen extends StatelessWidget {
             const _TshirtWidget(),
             Transform.translate(
               offset: printOffsetFromCenter,
-              child: Image.memory(tshirt.print),
+              child: Image(image: tshirt.print),
             ),
           ],
         ),

@@ -53,7 +53,6 @@ class _ItemWidget extends StatelessWidget {
       isCentered: false,
       isEditable: true,
       onPointerDown: onPointerDown,
-      tapToEdit: paintModel.tapToEdit,
       editTools: EditToolsWidget(paintModel: paintModel),
       operationState: operationState,
       onDelete: onDelete,

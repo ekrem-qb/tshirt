@@ -22,7 +22,6 @@ class Item {
     required this.child,
     this.id,
     this.onDelete,
-    this.tapToEdit = false,
   });
 
   final int? id;
@@ -31,19 +30,15 @@ class Item {
 
   final Future<bool> Function()? onDelete;
 
-  final bool tapToEdit;
-
   Item copyWith({
     int? id,
     Widget? child,
     Future<bool> Function()? onDelete,
-    bool? tapToEdit,
   }) =>
       Item(
         id: id ?? this.id,
         child: child ?? this.child,
         onDelete: onDelete ?? this.onDelete,
-        tapToEdit: tapToEdit ?? this.tapToEdit,
       );
 
   bool sameWith(Item item) => item.id == id;

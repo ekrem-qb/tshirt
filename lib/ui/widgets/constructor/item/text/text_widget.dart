@@ -56,7 +56,6 @@ class _ItemWidget extends StatelessWidget {
       isCentered: false,
       isEditable: true,
       onPointerDown: onPointerDown,
-      tapToEdit: textModel.tapToEdit,
       onDelete: onDelete,
       operationState: operationState,
       onOperationStateChanged: textModel.onOperationStateChanged,

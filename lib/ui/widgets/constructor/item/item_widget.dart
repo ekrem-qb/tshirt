@@ -52,7 +52,6 @@ class ItemWidget extends StatefulWidget {
     required this.child,
     this.isCentered = false,
     this.editTools,
-    this.tapToEdit = false,
     this.operationState = OperationState.idle,
     this.isEditable = false,
     this.onDelete,
@@ -81,9 +80,6 @@ class ItemWidget extends StatefulWidget {
 
   /// 能否编辑
   final bool isEditable;
-
-  /// 点击进行编辑，默认false
-  final bool tapToEdit;
 
   /// 操作状态
   final OperationState? operationState;
@@ -165,11 +161,8 @@ class ItemWidgetState extends State<ItemWidget> with SafeState<ItemWidget> {
 
   @override
   void didUpdateWidget(covariant ItemWidget oldWidget) {
-    if (widget.operationState != null &&
-        widget.operationState != oldWidget.operationState) {
-      operationState = widget.operationState!;
-      safeSetState(() {});
-    }
+    operationState = widget.operationState!;
+    safeSetState(() {});
     super.didUpdateWidget(oldWidget);
   }
 
@@ -191,20 +184,6 @@ class ItemWidgetState extends State<ItemWidget> with SafeState<ItemWidget> {
         Offset.zero;
     center = ownerCenter - selfCenter;
     return center;
-  }
-
-  /// 点击
-  void _onPointerDown() {
-    if (widget.tapToEdit) {
-      if (operationState != OperationState.editing) {
-        operationState = OperationState.editing;
-        safeSetState(() {});
-      }
-    } else if (operationState == OperationState.complete) {
-      safeSetState(() => operationState = OperationState.idle);
-    }
-
-    widget.onPointerDown?.call();
   }
 
   /// 切回常规状态
@@ -403,7 +382,7 @@ class ItemWidgetState extends State<ItemWidget> with SafeState<ItemWidget> {
       valueListenable: config,
       builder: (_, Config? config, Widget? child) {
         return Listener(
-          onPointerDown: (_) => _onPointerDown(),
+          onPointerDown: (_) => widget.onPointerDown?.call(),
           child: Stack(
             children: [
               ShaderMask(
@@ -459,22 +438,21 @@ class ItemWidgetState extends State<ItemWidget> with SafeState<ItemWidget> {
           ),
         );
       },
-      child: Stack(
-        key: itemKey,
-        fit: StackFit.passthrough,
-        children: [
-          if (operationState != OperationState.complete) _border,
-          if (operationState != OperationState.complete) _flipY,
-          if (operationState != OperationState.complete) _rotate,
-          if (operationState != OperationState.complete) _flipX,
-          if (widget.onDelete != null &&
-              operationState != OperationState.complete)
-            _delete,
-          if (widget.isEditable && operationState != OperationState.complete)
-            _edit,
-          if (operationState != OperationState.complete) _scale,
-        ],
-      ),
+      child: operationState != OperationState.complete
+          ? Stack(
+              key: itemKey,
+              fit: StackFit.passthrough,
+              children: [
+                _border,
+                _flipY,
+                _rotate,
+                _flipX,
+                if (widget.onDelete != null) _delete,
+                if (widget.isEditable) _edit,
+                _scale,
+              ],
+            )
+          : null,
     );
   }
 
