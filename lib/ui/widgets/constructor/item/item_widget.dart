@@ -381,60 +381,63 @@ class ItemWidgetState extends State<ItemWidget> with SafeState<ItemWidget> {
           previousConfig?.angle != newConfig?.angle,
       valueListenable: config,
       builder: (_, Config? config, Widget? child) {
-        return Listener(
-          onPointerDown: (_) => widget.onPointerDown?.call(),
-          child: Stack(
-            children: [
-              ShaderMask(
-                blendMode: BlendMode.dstIn,
-                shaderCallback: (_) => _constructorModel!.printMaskShader,
-                child: Stack(
-                  children: [
-                    Positioned(
-                      top: config?.offset.dy,
-                      left: config?.offset.dx,
-                      width: config?.size?.width,
-                      height: config?.size?.height,
-                      child: Transform.rotate(
-                        angle: config?.angle ?? 0,
-                        child: GestureDetector(
-                          behavior: HitTestBehavior.opaque,
-                          onPanStart: _movingStart,
-                          onPanUpdate: _moveHandle,
-                          onPanEnd: (_) {
-                            _changeToIdle();
-                            _constructorModel?.toggleCenterGuides(
-                              newVerticalState: false,
-                              newHorizontalState: false,
-                            );
-                          },
-                          child: _child,
+        return Offstage(
+          offstage: config?.size == null,
+          child: Listener(
+            onPointerDown: (_) => widget.onPointerDown?.call(),
+            child: Stack(
+              children: [
+                ShaderMask(
+                  blendMode: BlendMode.dstIn,
+                  shaderCallback: (_) => _constructorModel!.printMaskShader,
+                  child: Stack(
+                    children: [
+                      Positioned(
+                        top: config?.offset.dy,
+                        left: config?.offset.dx,
+                        width: config?.size?.width,
+                        height: config?.size?.height,
+                        child: Transform.rotate(
+                          angle: config?.angle ?? 0,
+                          child: GestureDetector(
+                            behavior: HitTestBehavior.opaque,
+                            onPanStart: _movingStart,
+                            onPanUpdate: _moveHandle,
+                            onPanEnd: (_) {
+                              _changeToIdle();
+                              _constructorModel?.toggleCenterGuides(
+                                newVerticalState: false,
+                                newHorizontalState: false,
+                              );
+                            },
+                            child: _child,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
-              FFloat(
-                (setter, contentState) {
-                  return widget.editTools != null
-                      ? widget.editTools!
-                      : const SizedBox.shrink();
-                },
-                controller: _fFloatController,
-                alignment: FFloatAlignment.bottomCenter,
-                child: Positioned(
-                  top: config?.offset.dy,
-                  left: config?.offset.dx,
-                  width: config?.size?.width,
-                  height: config?.size?.height,
-                  child: Transform.rotate(
-                    angle: config?.angle ?? 0,
-                    child: child,
+                    ],
                   ),
                 ),
-              ),
-            ],
+                FFloat(
+                  (setter, contentState) {
+                    return widget.editTools != null
+                        ? widget.editTools!
+                        : const SizedBox.shrink();
+                  },
+                  controller: _fFloatController,
+                  alignment: FFloatAlignment.bottomCenter,
+                  child: Positioned(
+                    top: config?.offset.dy,
+                    left: config?.offset.dx,
+                    width: config?.size?.width,
+                    height: config?.size?.height,
+                    child: Transform.rotate(
+                      angle: config?.angle ?? 0,
+                      child: child,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         );
       },
