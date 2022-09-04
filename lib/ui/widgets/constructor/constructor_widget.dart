@@ -136,7 +136,7 @@ class _PrintButton extends StatelessWidget {
                 Tshirt(
                   name: 'Custom Design',
                   print: MemoryImage(croppedImage),
-                ),
+                )..id = '',
                 isFlipped: constructorModel.isTshirtFlipped,
               );
             },

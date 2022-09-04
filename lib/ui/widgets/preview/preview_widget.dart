@@ -24,18 +24,50 @@ class PreviewScreen extends StatelessWidget {
         appBar: AppBar(
           title: Text(tshirt.name),
         ),
-        body: Stack(
-          fit: StackFit.expand,
-          alignment: Alignment.center,
+        body: Column(
           children: [
-            const _TshirtWidget(),
-            Transform.translate(
-              offset: printOffsetFromCenter,
-              child: Image(image: tshirt.print),
+            Expanded(
+              child: TshirtPreviewWidget(tshirt: tshirt),
             ),
+            const _BottomSheet(),
           ],
         ),
-        bottomSheet: const _BottomSheet(),
+      ),
+    );
+  }
+}
+
+class TshirtPreviewWidget extends StatelessWidget {
+  const TshirtPreviewWidget({
+    super.key,
+    required this.tshirt,
+  });
+
+  final Tshirt tshirt;
+
+  @override
+  Widget build(BuildContext context) {
+    return Hero(
+      tag: tshirt.id,
+      child: Center(
+        child: FittedBox(
+          child: SizedBox(
+            width: tshirtSize.width,
+            height: tshirtSize.height,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                const _TshirtWidget(),
+                Transform.translate(
+                  offset: printOffsetFromCenter,
+                  child: Image(
+                    image: tshirt.print,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -46,15 +78,10 @@ class _TshirtWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final side = context.select((Preview model) => model.side);
+    final side = context.select((Preview? model) => model?.side);
 
-    return Positioned(
-      width: tshirtSize.width,
-      height: tshirtSize.height,
-      child: Image(
-        image:
-            side == TshirtSide.Front ? Images.tshirtFront : Images.tshirtBack,
-      ),
+    return Image(
+      image: side == TshirtSide.Back ? Images.tshirtBack : Images.tshirtFront,
     );
   }
 }

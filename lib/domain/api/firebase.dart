@@ -29,7 +29,11 @@ Future<void> setupFirebase() async {
         databaseURL:
             'https://t-shirt-bb053-default-rtdb.europe-west1.firebasedatabase.app/'),
   );
-  db = FirebaseDatabase(app: _firebaseApp).reference();
+
+  final database = FirebaseDatabase(app: _firebaseApp);
+  await database.setPersistenceEnabled(true);
+  db = database.reference();
+
   storage = FirebaseStorage.instanceFor(app: _firebaseApp);
 }
 

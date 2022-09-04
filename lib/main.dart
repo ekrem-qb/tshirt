@@ -1,7 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'domain/api/firebase.dart';
-import 'ui/widgets/constructor/constructor_widget.dart';
+import 'ui/widgets/catalog/catalog_widget.dart';
 
 void main() async {
   await setupFirebase();
@@ -19,7 +19,7 @@ void main() async {
       theme: ThemeData(
         brightness: Brightness.light,
       ),
-      home: const ConstructorScreen(),
+      home: const CatalogScreen(),
     ),
   );
 }

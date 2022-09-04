@@ -35,7 +35,6 @@ class _MasksGridWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('rebuild');
     final maskPickerModel = context.watch<MaskPicker>();
 
     return GridView.builder(

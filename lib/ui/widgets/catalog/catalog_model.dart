@@ -2,23 +2,17 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-import '../../../../../../../domain/api/firebase.dart';
-import '../../../../../../../domain/entity/mask.dart';
-import '../../image_model.dart';
+import '../../../domain/api/firebase.dart';
+import '../../../domain/entity/tshirt.dart';
 
-class MaskPicker extends ChangeNotifier {
-  MaskPicker(this.imageModel, Mask? currentMask) {
-    if (currentMask != null) {
-      selectedMaskId = currentMask.id;
-    }
-    Future.microtask(() => _loadMasks());
+class Catalog extends ChangeNotifier {
+  Catalog() {
+    Future.microtask(() => _loadTshirts());
   }
-
-  final ImageItem imageModel;
 
   final List<StreamSubscription> _subscriptions = [];
 
-  final Map<String, Mask> masks = {'': Mask()..id = ''};
+  final Map<String, Tshirt> tshirts = {};
 
   bool _isLoading = true;
   bool get isLoading => _isLoading;
@@ -27,44 +21,37 @@ class MaskPicker extends ChangeNotifier {
     notifyListeners();
   }
 
-  String _selectedMaskId = '';
-  String get selectedMaskId => _selectedMaskId;
-  set selectedMaskId(String selectedIndex) {
-    _selectedMaskId = selectedIndex;
-    notifyListeners();
-  }
-
   final scrollController = ScrollController();
 
-  void _loadMasks() async {
+  void _loadTshirts() async {
     _subscriptions.add(
-      db.child('masks').onChildAdded.listen(
+      db.child('tshirts').onChildAdded.listen(
         (event) async {
           isLoading = false;
           if (event.snapshot.key != null && event.snapshot.value is Map) {
-            masks[event.snapshot.key!] = Mask.fromFirebase(event.snapshot);
+            tshirts[event.snapshot.key!] = Tshirt.fromFirebase(event.snapshot);
             notifyListeners();
           }
         },
       ),
     );
     _subscriptions.add(
-      db.child('masks').onChildChanged.listen(
+      db.child('tshirts').onChildChanged.listen(
         (event) async {
           isLoading = false;
           if (event.snapshot.key != null && event.snapshot.value is Map) {
-            masks[event.snapshot.key!] = Mask.fromFirebase(event.snapshot);
+            tshirts[event.snapshot.key!] = Tshirt.fromFirebase(event.snapshot);
             notifyListeners();
           }
         },
       ),
     );
     _subscriptions.add(
-      db.child('masks').onChildRemoved.listen(
+      db.child('tshirts').onChildRemoved.listen(
         (event) async {
           isLoading = false;
           if (event.snapshot.key != null && event.snapshot.value is Map) {
-            masks.remove(event.snapshot.key!);
+            tshirts.remove(event.snapshot.key!);
             notifyListeners();
           }
         },
