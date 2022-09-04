@@ -32,7 +32,7 @@ class EditToolsWidget extends StatelessWidget {
           onPressed: () => showModal(
             context: context,
             child: MaskPickerWidget(
-                imageModel: imageModel, currentMask: imageModel.maskSvgString),
+                imageModel: imageModel, currentMask: imageModel.mask),
           ),
           child: const Text('Mask'),
         ),

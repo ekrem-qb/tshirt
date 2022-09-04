@@ -4,11 +4,11 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../../../../domain/entity/mask.dart';
 import '../../../../../providers/library/image_provider_extension.dart';
 import '../../../../../resources/filters.dart';
 import '../item_model.dart';
 import '../item_widget.dart';
-import 'edit_tools/mask_picker/mask_picker_model.dart';
 
 class ImageItem extends Item with ChangeNotifier {
   ImageItem(
@@ -46,11 +46,11 @@ class ImageItem extends Item with ChangeNotifier {
     notifyListeners();
   }
 
-  String? _maskSvgString;
-  String? get maskSvgString => _maskSvgString;
-  set maskSvgString(String? newSvgString) {
-    _maskSvgString = newSvgString;
-    if (newSvgString != null) {
+  Mask? _mask;
+  Mask? get mask => _mask;
+  set mask(Mask? newMask) {
+    _mask = newMask;
+    if (newMask != null) {
       _parseSvg();
     } else {
       maskShader = null;
@@ -102,7 +102,7 @@ class ImageItem extends Item with ChangeNotifier {
   }
 
   Future<void> _parseSvg() async {
-    _maskSvg = await svg.fromSvgString(generateMaskSVG(maskSvgString!), '');
+    _maskSvg = await svg.fromSvgString(generateMaskSVG(mask!.svg), '');
     _calculateSvgSize();
     _maskSvgOldSize = _maskSvgCurrentSize;
     _renderSvg();
@@ -113,7 +113,7 @@ class ImageItem extends Item with ChangeNotifier {
       newCaseSize.width - CaseStyle.iconSize,
       newCaseSize.height - CaseStyle.iconSize,
     );
-    if (_maskSvgString != null) {
+    if (_mask != null) {
       _calculateSvgSize();
 
       final double oldSize =
@@ -132,7 +132,7 @@ class ImageItem extends Item with ChangeNotifier {
   }
 
   bool? onResizeDone(ui.Size size) {
-    if (_maskSvgString != null) {
+    if (_mask != null) {
       _calculateSvgSize();
       _maskSvgOldSize = _maskSvgCurrentSize;
       _renderSvg();

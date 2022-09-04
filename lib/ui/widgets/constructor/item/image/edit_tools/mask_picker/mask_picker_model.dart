@@ -1,39 +1,78 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
-import '../../../../../../../resources/masks.dart';
+import '../../../../../../../domain/api/firebase.dart';
+import '../../../../../../../domain/entity/mask.dart';
 import '../../image_model.dart';
 
 class MaskPicker extends ChangeNotifier {
-  MaskPicker(this.imageModel, String? currentMask) {
+  MaskPicker(this.imageModel, Mask? currentMask) {
     if (currentMask != null) {
-      final lastSelectedIndex = masks.indexOf(currentMask);
-      if (lastSelectedIndex != -1) {
-        selectedIndex = lastSelectedIndex;
-      }
+      selectedMaskId = currentMask.id;
     }
+    Future.microtask(() => _loadMasks());
   }
 
   final ImageItem imageModel;
 
-  List<String> _masks = defaultMaskPaths;
-  List<String> get masks => _masks;
-  set masks(List<String> masks) {
-    _masks = masks;
-    notifyListeners();
-  }
+  final List<StreamSubscription> subscriptions = [];
 
-  int _selectedIndex = 0;
-  int get selectedIndex => _selectedIndex;
-  set selectedIndex(int selectedIndex) {
-    _selectedIndex = selectedIndex;
+  final Map<String, Mask> masks = {'': Mask()..id = ''};
+
+  bool isLoading = true;
+
+  String _selectedMaskId = '';
+  String get selectedMaskId => _selectedMaskId;
+  set selectedMaskId(String selectedIndex) {
+    _selectedMaskId = selectedIndex;
     notifyListeners();
   }
 
   final scrollController = ScrollController();
-}
 
-String generateMaskSVG(String path) {
-  return path[0] == '<'
-      ? path
-      : '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="$path" /></svg>';
+  void _loadMasks() async {
+    subscriptions.add(
+      db.child('masks').onChildAdded.listen(
+        (event) async {
+          isLoading = false;
+          if (event.snapshot.key != null) {
+            masks[event.snapshot.key!] = Mask.fromFirebase(event.snapshot);
+            notifyListeners();
+          }
+        },
+      ),
+    );
+    subscriptions.add(
+      db.child('masks').onChildChanged.listen(
+        (event) async {
+          isLoading = false;
+          if (event.snapshot.key != null) {
+            masks[event.snapshot.key!] = Mask.fromFirebase(event.snapshot);
+            notifyListeners();
+          }
+        },
+      ),
+    );
+    subscriptions.add(
+      db.child('masks').onChildRemoved.listen(
+        (event) async {
+          isLoading = false;
+          if (event.snapshot.key != null) {
+            masks.remove(event.snapshot.key!);
+            notifyListeners();
+          }
+        },
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    scrollController.dispose();
+    for (final subscription in subscriptions) {
+      subscription.cancel();
+    }
+    super.dispose();
+  }
 }
