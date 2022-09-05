@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_dart/database.dart';
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -23,12 +24,12 @@ class Tshirt {
 
   static ImageProvider imageFromJson(String? url) {
     return url != null
-        ? NetworkImage(url)
+        ? CachedNetworkImageProvider(url, cacheKey: url)
         : Images.tshirtFront as ImageProvider;
   }
 
   static String imageToJson(ImageProvider image) {
-    return image is NetworkImage ? image.url : '';
+    return image is CachedNetworkImageProvider ? image.url : '';
   }
 
   factory Tshirt.fromFirebase(DataSnapshot snapshot) =>
