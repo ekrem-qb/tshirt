@@ -273,7 +273,7 @@ class _BottomSheet extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(buttonsSpacing),
       child: SizedBox(
-        height: 150,
+        height: modalSheetHeight,
         child: Column(
           children: [
             Expanded(

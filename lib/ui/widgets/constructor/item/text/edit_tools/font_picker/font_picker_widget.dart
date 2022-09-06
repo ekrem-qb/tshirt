@@ -21,7 +21,7 @@ class FontPickerWidget extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (_) => FontPicker(textModel, currentFont),
       child: SizedBox(
-        height: MediaQuery.of(context).size.height / 4,
+        height: modalSheetHeight * 3,
         child: _FontsGridWidget(textModel),
       ),
     );

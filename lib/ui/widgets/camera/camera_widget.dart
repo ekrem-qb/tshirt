@@ -4,6 +4,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../theme.dart';
 import 'camera_model.dart';
 
 class CameraWidget extends StatelessWidget {
@@ -64,7 +65,7 @@ class _TakePictureWidget extends StatelessWidget {
             ),
           ),
           Positioned(
-            height: 150,
+            height: modalSheetHeight,
             left: 0,
             right: 0,
             bottom: 0,
@@ -145,7 +146,7 @@ class _PreviewWidget extends StatelessWidget {
             ),
           ),
           Positioned(
-            height: 150,
+            height: modalSheetHeight,
             left: 0,
             right: 0,
             bottom: 0,

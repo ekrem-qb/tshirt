@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../../../../domain/entity/mask.dart';
+import '../../../../../../theme.dart';
 import '../../image_model.dart';
 import 'mask_picker_model.dart';
 
@@ -21,7 +22,7 @@ class MaskPickerWidget extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (_) => MaskPicker(imageModel, currentMask),
       child: SizedBox(
-        height: MediaQuery.of(context).size.height / 4,
+        height: modalSheetHeight * 3,
         child: _MasksGridWidget(imageModel),
       ),
     );
