@@ -49,33 +49,40 @@ class _ItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    ImageItem? imageModel;
-    final maskShader = context.select((ImageItem model) {
-      imageModel ??= model;
-      return model.maskShader;
-    });
+    final imageModel = context.read<ImageItem>();
 
     return ItemWidget(
-      controller: imageModel!.itemController,
+      controller: imageModel.itemController,
       isEditable: true,
       onPointerDown: onPointerDown,
       onDelete: onDelete,
-      onSizeChanged: imageModel!.onSizeChanged,
-      onResizeDone: imageModel!.onResizeDone,
+      onSizeChanged: imageModel.onSizeChanged,
+      onResizeDone: imageModel.onResizeDone,
       onFlipped: (newFlipMatrix) {
-        imageModel!.flipMatrix = newFlipMatrix;
+        imageModel.flipMatrix = newFlipMatrix;
         return true;
       },
       operationState: operationState,
-      editTools: EditToolsWidget(imageModel!),
-      child: maskShader != null
-          ? ShaderMask(
-              blendMode: BlendMode.dstIn,
-              shaderCallback: (_) => maskShader,
-              child: const _ImageWidget(),
-            )
-          : const _ImageWidget(),
+      editTools: EditToolsWidget(imageModel),
+      child: const _MaskedImageWidget(),
     );
+  }
+}
+
+class _MaskedImageWidget extends StatelessWidget {
+  const _MaskedImageWidget();
+
+  @override
+  Widget build(BuildContext context) {
+    final maskShader = context.select((ImageItem model) => model.maskShader);
+
+    return maskShader != null
+        ? ShaderMask(
+            blendMode: BlendMode.dstIn,
+            shaderCallback: (_) => maskShader,
+            child: const _ImageWidget(),
+          )
+        : const _ImageWidget();
   }
 }
 
