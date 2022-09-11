@@ -77,7 +77,6 @@ class _DesignsGrid extends StatelessWidget {
                 ),
               );
             },
-            physics: const BouncingScrollPhysics(),
           );
   }
 }

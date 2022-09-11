@@ -41,7 +41,7 @@ class _FontFamilyPickWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FloatingActionButton.small(
+    return OutlinedButton(
       onPressed: () {
         showModal(
           context: context,
@@ -63,7 +63,7 @@ class _ColorPickWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FloatingActionButton.small(
+    return OutlinedButton(
       onPressed: () {
         showModal(
           context: context,
