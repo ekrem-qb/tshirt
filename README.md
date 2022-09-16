@@ -1,16 +1,15 @@
-# tshirt
+# Installation
 
-A new Flutter project.
+1. Git: https://git-scm.com/downloads
+## AI photo background remove
+1. Python: https://www.python.org/downloads/
 
-## Getting Started
+    <img src="https://fuzeservers.ru/wp-content/uploads/5/c/b/5cbce1381a317ce072f71f463d5185f9.jpeg" alt="Add Python to PATH" width="364">
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+2. CarveKit
+    1. `git clone https://github.com/OPHoperHPO/image-background-remove-tool.git`
+    2. `pip install -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cpu`
+    3. `pip install ./`
+## Wi-Fi picture send
+1. NodeJS: https://nodejs.org/
+2. tshirt-print-upload: `npm install -g https://github.com/ekrem-qb/tshirt-print-upload.git`
